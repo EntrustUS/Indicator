@@ -1,0 +1,240 @@
+
+<h2 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">Real-time world timezone display grouped by region with color backgrounds</h2>
+
+<style>
+  #wt-wrap { background: #0f1117; border-radius: 16px; padding: 1.25rem 1.25rem 1.5rem; min-height: 100px; }
+  .wt-header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 14px; border-bottom: 0.5px solid rgba(255,255,255,0.1); margin-bottom: 6px; }
+  .wt-title { font-size: 15px; font-weight: 500; color: #e8e8e8; display: flex; align-items: center; gap: 8px; }
+  .wt-utc { font-size: 12px; color: #888; font-variant-numeric: tabular-nums; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: #1D9E75; display: inline-block; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
+
+  .region-block { border-radius: 14px; padding: 14px 14px 16px; margin-top: 14px; }
+
+  .sec-label { font-size: 10px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; margin-bottom: 10px; }
+
+  .tz-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px; }
+  .tz-card { border-radius: 11px; padding: 12px 14px; transition: opacity 0.2s; }
+  .tz-card:hover { opacity: 0.85; }
+  .tz-city { font-size: 13px; font-weight: 500; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tz-sub { font-size: 10px; margin-bottom: 5px; }
+  .tz-time { font-size: 23px; font-weight: 500; font-variant-numeric: tabular-nums; letter-spacing: -0.5px; }
+  .tz-date { font-size: 11px; margin-top: 3px; }
+  .tz-offset { font-size: 10px; margin-top: 2px; opacity: 0.5; }
+  .badge { display: inline-block; font-size: 10px; padding: 2px 7px; border-radius: 5px; margin-top: 5px; font-weight: 500; }
+
+  /* Americas — indigo/violet */
+  .region-americas { background: #131629; }
+  .region-americas .sec-label { color: #7b82d4; }
+  .region-americas .tz-card { background: #1a1f3a; border: 0.5px solid rgba(123,130,212,0.18); }
+  .region-americas .tz-city { color: #c5c8f0; }
+  .region-americas .tz-sub { color: #5a5f8a; }
+  .region-americas .tz-time { color: #e8eaff; }
+  .region-americas .tz-date { color: #6a70a8; }
+  .region-americas .badge-morning   { background: #1c2b3a; color: #5bc4f0; }
+  .region-americas .badge-afternoon { background: #2e2218; color: #e8922b; }
+  .region-americas .badge-evening   { background: #2a2060; color: #9a8adf; }
+  .region-americas .badge-night     { background: #151830; color: #6070b8; }
+
+  /* Europe & Africa — teal */
+  .region-europe { background: #0e1e1a; }
+  .region-europe .sec-label { color: #2db890; }
+  .region-europe .tz-card { background: #131f1c; border: 0.5px solid rgba(29,158,117,0.2); }
+  .region-europe .tz-city { color: #b8d8cf; }
+  .region-europe .tz-sub { color: #3a6058; }
+  .region-europe .tz-time { color: #e0f5f0; }
+  .region-europe .tz-date { color: #4a8070; }
+  .region-europe .badge-morning   { background: #1a3028; color: #4eca8a; }
+  .region-europe .badge-afternoon { background: #2e2010; color: #e8922b; }
+  .region-europe .badge-evening   { background: #2a2318; color: #c8a04e; }
+  .region-europe .badge-night     { background: #101c1a; color: #4a8070; }
+
+  /* Central & Eastern Europe — amber/warm */
+  .region-cee { background: #1c1608; }
+  .region-cee .sec-label { color: #c89040; }
+  .region-cee .tz-card { background: #231c0c; border: 0.5px solid rgba(200,144,64,0.2); }
+  .region-cee .tz-city { color: #e0c888; }
+  .region-cee .tz-sub { color: #6a5020; }
+  .region-cee .tz-time { color: #f5e8c0; }
+  .region-cee .tz-date { color: #8a6830; }
+  .region-cee .badge-morning   { background: #1e2e18; color: #6aca6a; }
+  .region-cee .badge-afternoon { background: #3a2808; color: #f0a030; }
+  .region-cee .badge-evening   { background: #2a1e08; color: #c8903a; }
+  .region-cee .badge-night     { background: #181208; color: #806030; }
+
+  /* Nordic — ice blue */
+  .region-nordic { background: #0c1620; }
+  .region-nordic .sec-label { color: #5aacdc; }
+  .region-nordic .tz-card { background: #111e2c; border: 0.5px solid rgba(90,172,220,0.18); }
+  .region-nordic .tz-city { color: #a8cce0; }
+  .region-nordic .tz-sub { color: #2e5068; }
+  .region-nordic .tz-time { color: #d8eef8; }
+  .region-nordic .tz-date { color: #4a7898; }
+  .region-nordic .badge-morning   { background: #102030; color: #5ac0e0; }
+  .region-nordic .badge-afternoon { background: #2a2010; color: #e0a040; }
+  .region-nordic .badge-evening   { background: #1a1828; color: #8898c8; }
+  .region-nordic .badge-night     { background: #0c1420; color: #3a6088; }
+
+  /* Southeast Asia — coral/orange */
+  .region-sea { background: #1e1008; }
+  .region-sea .sec-label { color: #d06840; }
+  .region-sea .tz-card { background: #261410; border: 0.5px solid rgba(208,104,64,0.2); }
+  .region-sea .tz-city { color: #e8b090; }
+  .region-sea .tz-sub { color: #6a3820; }
+  .region-sea .tz-time { color: #f8d8c0; }
+  .region-sea .tz-date { color: #905030; }
+  .region-sea .badge-morning   { background: #1c2e18; color: #68c868; }
+  .region-sea .badge-afternoon { background: #3a1e08; color: #f08030; }
+  .region-sea .badge-evening   { background: #2a1808; color: #c06838; }
+  .region-sea .badge-night     { background: #160e08; color: #805040; }
+
+  /* East Asia — green */
+  .region-eastasia { background: #0e1e10; }
+  .region-eastasia .sec-label { color: #50a860; }
+  .region-eastasia .tz-card { background: #12241a; border: 0.5px solid rgba(80,168,96,0.3); }
+  .region-eastasia .tz-city { color: #a8d8b0; }
+  .region-eastasia .tz-sub { color: #306040; }
+  .region-eastasia .tz-time { color: #d8f0dc; }
+  .region-eastasia .tz-date { color: #488858; }
+  .region-eastasia .badge-morning   { background: #1a3020; color: #58d878; }
+  .region-eastasia .badge-afternoon { background: #2e2010; color: #e0a030; }
+  .region-eastasia .badge-evening   { background: #20280a; color: #a8c848; }
+  .region-eastasia .badge-night     { background: #0e1810; color: #408050; }
+
+  /* Greater China — red */
+  .region-china { background: #1e0c0c; }
+  .region-china .sec-label { color: #c04848; }
+  .region-china .tz-card { background: #261010; border: 0.5px solid rgba(192,72,72,0.2); }
+  .region-china .tz-city { color: #e8a8a8; }
+  .region-china .tz-sub { color: #703030; }
+  .region-china .tz-time { color: #f8d8d8; }
+  .region-china .tz-date { color: #a05050; }
+  .region-china .badge-morning   { background: #1e2c18; color: #68c870; }
+  .region-china .badge-afternoon { background: #3a1808; color: #f08030; }
+  .region-china .badge-evening   { background: #2a1010; color: #c06060; }
+  .region-china .badge-night     { background: #180c0c; color: #904040; }
+
+  /* Pacific — purple */
+  .region-pacific { background: #150e20; }
+  .region-pacific .sec-label { color: #8860c8; }
+  .region-pacific .tz-card { background: #1c1430; border: 0.5px solid rgba(136,96,200,0.2); }
+  .region-pacific .tz-city { color: #c8a8e8; }
+  .region-pacific .tz-sub { color: #503870; }
+  .region-pacific .tz-time { color: #e8d8f8; }
+  .region-pacific .tz-date { color: #7858a8; }
+  .region-pacific .badge-morning   { background: #1a2830; color: #58b8e0; }
+  .region-pacific .badge-afternoon { background: #2e1e10; color: #e0a040; }
+  .region-pacific .badge-evening   { background: #241828; color: #a878d8; }
+  .region-pacific .badge-night     { background: #120c1e; color: #6848a0; }
+</style>
+
+<div id="wt-wrap">
+  <div class="wt-header">
+    <span class="wt-title"><span class="dot"></span>World time</span>
+    <span class="wt-utc" id="wt-utc">UTC —</span>
+  </div>
+  <div id="wt-body"></div>
+</div>
+
+<script>
+const SECTIONS = [
+  { label: "Americas", regionClass: "region-americas", zones: [
+    { city: "Irvine",       sub: "California, US",   tz: "America/Los_Angeles" },
+    { city: "Los Angeles",  sub: "California, US",   tz: "America/Los_Angeles" },
+    { city: "Texas",        sub: "Central Time, US", tz: "America/Chicago" },
+    { city: "Bogotá",       sub: "Colombia",         tz: "America/Bogota" },
+    { city: "New York",     sub: "New York, US",     tz: "America/New_York" },
+    { city: "São Paulo",    sub: "Brazil",           tz: "America/Sao_Paulo" },
+    { city: "Buenos Aires", sub: "Argentina",        tz: "America/Argentina/Buenos_Aires" },
+  ]},
+  { label: "Europe & Africa", regionClass: "region-europe", zones: [
+    { city: "Lisbon",   sub: "Portugal", tz: "Europe/Lisbon" },
+    { city: "London",   sub: "UK",       tz: "Europe/London" },
+    { city: "Madrid",   sub: "Spain",    tz: "Europe/Madrid" },
+    { city: "Paris",    sub: "France",   tz: "Europe/Paris" },
+    { city: "Berlin",   sub: "Germany",  tz: "Europe/Berlin" },
+    { city: "Istanbul", sub: "Turkey",   tz: "Europe/Istanbul" },
+    { city: "Dubai",    sub: "UAE",      tz: "Asia/Dubai" },
+    { city: "Nairobi",  sub: "Kenya",    tz: "Africa/Nairobi" },
+  ]},
+  { label: "Central & Eastern Europe", regionClass: "region-cee", zones: [
+    { city: "Budapest",  sub: "Hungary", tz: "Europe/Budapest" },
+    { city: "Bucharest", sub: "Romania", tz: "Europe/Bucharest" },
+    { city: "Warsaw",    sub: "Poland",  tz: "Europe/Warsaw" },
+  ]},
+  { label: "Nordic Countries", regionClass: "region-nordic", zones: [
+    { city: "Copenhagen", sub: "Denmark",  tz: "Europe/Copenhagen" },
+    { city: "Stockholm",  sub: "Sweden",   tz: "Europe/Stockholm" },
+    { city: "Oslo",       sub: "Norway",   tz: "Europe/Oslo" },
+    { city: "Helsinki",   sub: "Finland",  tz: "Europe/Helsinki" },
+    { city: "Reykjavik",  sub: "Iceland",  tz: "Atlantic/Reykjavik" },
+  ]},
+  { label: "Southeast Asia", regionClass: "region-sea", zones: [
+    { city: "Bangkok",   sub: "Thailand",  tz: "Asia/Bangkok" },
+    { city: "Singapore", sub: "Singapore", tz: "Asia/Singapore" },
+    { city: "Jakarta",   sub: "Indonesia", tz: "Asia/Jakarta" },
+  ]},
+  { label: "East Asia — Japan · Taiwan · South Korea", regionClass: "region-eastasia", zones: [
+    { city: "Tokyo",  sub: "Japan",       tz: "Asia/Tokyo" },
+    { city: "Taipei", sub: "Taiwan",      tz: "Asia/Taipei" },
+    { city: "Seoul",  sub: "South Korea", tz: "Asia/Seoul" },
+  ]},
+  { label: "Greater China", regionClass: "region-china", zones: [
+    { city: "Beijing", sub: "China", tz: "Asia/Shanghai" },
+  ]},
+  { label: "Pacific", regionClass: "region-pacific", zones: [
+    { city: "Melbourne", sub: "Australia",   tz: "Australia/Melbourne" },
+    { city: "Auckland",  sub: "New Zealand", tz: "Pacific/Auckland" },
+  ]},
+];
+
+function getOffset(tz, now) {
+  const u = new Date(now.toLocaleString('en-US', { timeZone: 'UTC' }));
+  const t = new Date(now.toLocaleString('en-US', { timeZone: tz }));
+  const diff = (t - u) / 3600000;
+  const sign = diff >= 0 ? '+' : '-';
+  const abs = Math.abs(diff);
+  const h = Math.floor(abs);
+  const m = Math.round((abs - h) * 60);
+  return `UTC${sign}${String(h).padStart(2,'0')}${m ? ':' + String(m).padStart(2,'0') : ''}`;
+}
+
+function getDayPhase(hour) {
+  if (hour >= 6  && hour < 12) return ['badge-morning',   'Morning'];
+  if (hour >= 12 && hour < 18) return ['badge-afternoon', 'Afternoon'];
+  if (hour >= 18 && hour < 22) return ['badge-evening',   'Evening'];
+  return ['badge-night', 'Night'];
+}
+
+function render() {
+  const now = new Date();
+  document.getElementById('wt-utc').textContent =
+    now.toLocaleTimeString('en-GB', { timeZone: 'UTC', hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' UTC';
+
+  let html = '';
+  SECTIONS.forEach(section => {
+    html += `<div class="region-block ${section.regionClass}">`;
+    html += `<div class="sec-label">${section.label}</div><div class="tz-grid">`;
+    section.zones.forEach(z => {
+      const timeStr = now.toLocaleTimeString('en-US', { timeZone: z.tz, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+      const dateStr = now.toLocaleDateString('en-US', { timeZone: z.tz, weekday: 'short', month: 'short', day: 'numeric' });
+      const hourNum = parseInt(now.toLocaleString('en-US', { timeZone: z.tz, hour: 'numeric', hour12: false }));
+      const [badgeCls, phase] = getDayPhase(hourNum);
+      const offset = getOffset(z.tz, now);
+      html += `<div class="tz-card">
+        <div class="tz-city">${z.city}</div>
+        <div class="tz-sub">${z.sub}</div>
+        <div class="tz-time">${timeStr}</div>
+        <div class="tz-date">${dateStr}</div>
+        <div class="tz-offset">${offset}</div>
+        <span class="badge ${badgeCls}">${phase}</span>
+      </div>`;
+    });
+    html += '</div></div>';
+  });
+  document.getElementById('wt-body').innerHTML = html;
+}
+
+render();
+setInterval(render, 1000);
+</script>
