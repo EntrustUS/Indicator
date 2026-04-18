@@ -1,0 +1,1996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Eunoia — Beautiful Thinking</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Instrument+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  /* Brand palette — preserved */
+  --forest:#1a2e1e; --canopy:#243428; --moss:#2f4233; --fern:#3d5640;
+  --leaf:#4f7155; --sage:#6b9070; --mint:#94b898; --foam:#c3d9c5;
+  --gold:#c9a84c; --gold2:#c9a84c;
+  --clay:#b87355; --clay2:#d4956e;
+  --lavender:#8c87c2; --lav2:#9d98ce;
+  --blush:#c47878; --blush2:#cc8888;
+  --sky:#5e9bb5; --sky2:#6eacc6;
+  --crimson:#e03050; --crimson2:#ff4060;
+
+  /* Spanish-inspired surfaces — Andalucía sun, terracotta, azulejo */
+  --bg-page:#F2E8D8;          /* sun-bleached adobe / parchment */
+  --bg-phone:#FDF8EE;         /* warm candlelight interior */
+  --bg-header:#FAF2E4;        /* whitewashed cortijo wall */
+  --bg-card:#FFFDF8;          /* ivory */
+  --bg-card2:#FEF5E4;         /* warm saffron tint */
+  --bg-stat:#F6EDD8;          /* linen-ochre */
+  --bg-panel:#F0E6D2;         /* raw sienna wash */
+  --bg-tab-strip:#FAF2E4;
+  --bg-bottom-nav:rgba(253,248,238,0.97);
+
+  /* Lines & borders — warm terracotta tones */
+  --line:rgba(190,120,60,0.18);
+  --line2:rgba(170,90,40,0.30);
+
+  /* Text */
+  --fg:#1e2820;
+  --fg2:#3d5640;
+  --fg3:#7a8f7c;
+
+  --surface:rgba(255,250,246,0.9);
+  --r:14px; --rs:9px; --rm:6px;
+}
+/* ══ SPANISH THEME PALETTES ══ */
+body.theme-andalucia {
+  --bg-page:#F2E8D8; --bg-phone:#FDF8EE; --bg-header:#FAF2E4;
+  --bg-card:#FFFDF8; --bg-card2:#FEF5E4; --bg-stat:#F6EDD8;
+  --bg-panel:#F0E6D2; --bg-tab-strip:#FAF2E4;
+  --bg-bottom-nav:rgba(253,248,238,0.97);
+  --line:rgba(190,120,60,0.18); --line2:rgba(170,90,40,0.30);
+  --theme-glow1:rgba(210,120,50,.10); --theme-glow2:rgba(180,80,40,.08); --theme-glow3:rgba(220,170,60,.06);
+}
+body.theme-azulejo {
+  --bg-page:#E8EFF5; --bg-phone:#F4F8FC; --bg-header:#EDF4FA;
+  --bg-card:#FAFCFF; --bg-card2:#EEF5FB; --bg-stat:#E4EDF5;
+  --bg-panel:#DCE8F2; --bg-tab-strip:#EDF4FA;
+  --bg-bottom-nav:rgba(244,248,252,0.97);
+  --line:rgba(60,110,170,0.16); --line2:rgba(40,90,150,0.28);
+  --theme-glow1:rgba(60,130,200,.09); --theme-glow2:rgba(30,90,160,.07); --theme-glow3:rgba(80,160,210,.05);
+}
+body.theme-flamenco {
+  --bg-page:#F5E8E8; --bg-phone:#FDF4F4; --bg-header:#FAF0F0;
+  --bg-card:#FFFAFA; --bg-card2:#FEF0F0; --bg-stat:#F6E4E4;
+  --bg-panel:#F0D8D8; --bg-tab-strip:#FAF0F0;
+  --bg-bottom-nav:rgba(253,244,244,0.97);
+  --line:rgba(190,70,70,0.16); --line2:rgba(160,50,50,0.28);
+  --theme-glow1:rgba(210,60,60,.09); --theme-glow2:rgba(180,40,60,.07); --theme-glow3:rgba(220,80,50,.05);
+}
+body.theme-seville {
+  --bg-page:#F5F0E2; --bg-phone:#FDFAF0; --bg-header:#FAF6E8;
+  --bg-card:#FFFEFC; --bg-card2:#FEF9EA; --bg-stat:#F6F0DC;
+  --bg-panel:#EEE8D0; --bg-tab-strip:#FAF6E8;
+  --bg-bottom-nav:rgba(253,250,240,0.97);
+  --line:rgba(180,150,50,0.18); --line2:rgba(155,120,30,0.30);
+  --theme-glow1:rgba(200,160,40,.09); --theme-glow2:rgba(170,120,30,.07); --theme-glow3:rgba(220,180,50,.05);
+}
+body.theme-granada {
+  --bg-page:#EAE8F0; --bg-phone:#F6F4FC; --bg-header:#F1EFF8;
+  --bg-card:#FCFAFF; --bg-card2:#F0EEF8; --bg-stat:#E4E2F0;
+  --bg-panel:#DCDAF0; --bg-tab-strip:#F1EFF8;
+  --bg-bottom-nav:rgba(246,244,252,0.97);
+  --line:rgba(110,90,170,0.16); --line2:rgba(90,70,150,0.28);
+  --theme-glow1:rgba(120,90,190,.08); --theme-glow2:rgba(90,60,160,.07); --theme-glow3:rgba(140,110,200,.05);
+}
+
+/* ══ DARK THEME PALETTES ══ */
+body.theme-dark-obsidian {
+  --bg-page:#0f0f12; --bg-phone:#141418; --bg-header:#18181e;
+  --bg-card:#1c1c24; --bg-card2:#1a1a22; --bg-stat:#161620;
+  --bg-panel:#1e1e28; --bg-tab-strip:#18181e;
+  --bg-bottom-nav:rgba(20,20,24,0.98);
+  --line:rgba(255,255,255,0.08); --line2:rgba(255,255,255,0.15);
+  --fg:#e8e8f0; --fg2:#a0a0b8; --fg3:#5a5a72;
+  --theme-glow1:rgba(120,80,220,.12); --theme-glow2:rgba(60,40,140,.10); --theme-glow3:rgba(180,120,255,.06);
+}
+body.theme-dark-midnight {
+  --bg-page:#0a0e1a; --bg-phone:#0d1220; --bg-header:#111628;
+  --bg-card:#141b2e; --bg-card2:#121830; --bg-stat:#0f1422;
+  --bg-panel:#161e34; --bg-tab-strip:#111628;
+  --bg-bottom-nav:rgba(13,18,32,0.98);
+  --line:rgba(80,120,255,0.12); --line2:rgba(80,120,255,0.22);
+  --fg:#dde4f8; --fg2:#8899cc; --fg3:#445580;
+  --theme-glow1:rgba(60,100,255,.14); --theme-glow2:rgba(20,60,180,.10); --theme-glow3:rgba(100,140,255,.06);
+}
+body.theme-dark-ember {
+  --bg-page:#120a06; --bg-phone:#180e08; --bg-header:#1e1208;
+  --bg-card:#22160a; --bg-card2:#201408; --bg-stat:#1a1008;
+  --bg-panel:#261808; --bg-tab-strip:#1e1208;
+  --bg-bottom-nav:rgba(24,14,8,0.98);
+  --line:rgba(255,140,40,0.12); --line2:rgba(255,140,40,0.22);
+  --fg:#f4e8d8; --fg2:#c8966a; --fg3:#7a5030;
+  --theme-glow1:rgba(255,100,20,.14); --theme-glow2:rgba(200,60,10,.10); --theme-glow3:rgba(255,160,40,.07);
+}
+body.theme-dark-aurora {
+  --bg-page:#070e10; --bg-phone:#0a1318; --bg-header:#0d1820;
+  --bg-card:#101e28; --bg-card2:#0e1c24; --bg-stat:#091016;
+  --bg-panel:#121e2c; --bg-tab-strip:#0d1820;
+  --bg-bottom-nav:rgba(10,19,24,0.98);
+  --line:rgba(40,220,160,0.12); --line2:rgba(40,220,160,0.22);
+  --fg:#d4f4ec; --fg2:#60c8a0; --fg3:#30706050;
+  --fg3:#2d7060; --theme-glow1:rgba(20,200,140,.14); --theme-glow2:rgba(10,160,100,.10); --theme-glow3:rgba(60,220,180,.07);
+}
+body.theme-dark-velvet {
+  --bg-page:#0e080e; --bg-phone:#140c14; --bg-header:#1a101a;
+  --bg-card:#201420; --bg-card2:#1c1220; --bg-stat:#160e18;
+  --bg-panel:#241626; --bg-tab-strip:#1a101a;
+  --bg-bottom-nav:rgba(20,12,20,0.98);
+  --line:rgba(200,80,200,0.12); --line2:rgba(200,80,200,0.22);
+  --fg:#f0daf0; --fg2:#b880c0; --fg3:#704080;
+  --theme-glow1:rgba(180,40,180,.14); --theme-glow2:rgba(120,20,140,.10); --theme-glow3:rgba(220,100,220,.07);
+}
+
+/* ── SETTINGS PANEL (full-overlay inside member dropdown) ── */
+.settings-overlay{
+  position:absolute; inset:0; z-index:500;
+  background:var(--bg-phone);
+  border-radius:inherit;
+  display:none; flex-direction:column;
+  overflow:hidden;
+  animation:dropIn .22s ease;
+}
+.settings-overlay.show{display:flex;}
+.settings-head{
+  display:flex; align-items:center; gap:10px;
+  padding:14px 14px 12px;
+  border-bottom:1px solid var(--line);
+  background:var(--bg-header); flex-shrink:0;
+}
+.settings-back{
+  width:28px; height:28px; border-radius:50%; border:none;
+  background:rgba(0,0,0,.06); cursor:pointer; display:flex;
+  align-items:center; justify-content:center; flex-shrink:0; transition:background .15s;
+}
+.settings-back:hover{background:rgba(0,0,0,.12);}
+.settings-back svg{width:12px;height:12px;stroke:var(--fg2);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.settings-title{font-family:'Fraunces',serif;font-size:15px;font-style:italic;font-weight:300;color:var(--fg);}
+.settings-body{flex:1;overflow-y:auto;scrollbar-width:none;padding:14px 14px 24px;}
+.settings-body::-webkit-scrollbar{display:none;}
+.settings-section-label{
+  font-size:8px; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--fg3); margin-bottom:10px; margin-top:18px; padding-bottom:5px;
+  border-bottom:1px solid var(--line);
+}
+.settings-section-label:first-child{margin-top:0;}
+
+/* Theme grid inside settings */
+.theme-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:4px;}
+.theme-card{
+  border-radius:12px; overflow:hidden; cursor:pointer;
+  border:2px solid transparent; transition:all .2s;
+  position:relative;
+}
+.theme-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.15);}
+.theme-card.active{border-color:var(--sage);}
+.theme-card.active::after{
+  content:'✓'; position:absolute; top:5px; right:6px;
+  font-size:9px; font-weight:800; color:#fff;
+  text-shadow:0 1px 3px rgba(0,0,0,.5);
+}
+.theme-preview{height:44px;width:100%;display:block;}
+.theme-card-name{
+  font-size:8px; font-weight:500; letter-spacing:.04em;
+  text-align:center; padding:5px 4px;
+  background:var(--bg-card); color:var(--fg3);
+}
+
+/* Dark theme cards get special gradient previews */
+.theme-preview-dark{
+  height:44px; position:relative; overflow:hidden;
+}
+.theme-preview-dark::before{
+  content:''; position:absolute; inset:0;
+  background:inherit;
+}
+.theme-preview-dark::after{
+  content:''; position:absolute;
+  width:60px; height:60px; border-radius:50%;
+  top:-10px; left:-10px; opacity:.7;
+  background:inherit; filter:blur(12px);
+}
+
+/* Settings row items */
+.settings-row{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px 0; border-bottom:1px solid var(--line);
+}
+.settings-row:last-child{border-bottom:none;}
+.settings-row-label{font-size:11px; color:var(--fg); font-weight:500;}
+.settings-row-sub{font-size:9px; color:var(--fg3); margin-top:1px;}
+.settings-toggle{width:36px;height:20px;border-radius:10px;background:rgba(107,144,112,.2);border:1px solid var(--line);position:relative;cursor:pointer;transition:all .2s;}
+.settings-toggle.on{background:rgba(107,144,112,.4);border-color:var(--sage);}
+.settings-toggle::after{content:'';position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:var(--fg3);transition:all .2s;}
+.settings-toggle.on::after{left:18px;background:var(--sage);}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg-page);
+  font-family:'Instrument Sans',sans-serif;
+  font-size:13px; line-height:1.6;
+  min-height:100vh;
+  display:flex; justify-content:center; align-items:flex-start;
+  padding:1.5rem 1rem 3rem;
+  background-image:
+    radial-gradient(ellipse 65% 45% at 15% 8%, var(--theme-glow1,rgba(210,120,50,.10)) 0%,transparent 60%),
+    radial-gradient(ellipse 45% 65% at 85% 85%, var(--theme-glow2,rgba(180,80,40,.08)) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 40% at 55% 40%, var(--theme-glow3,rgba(220,170,60,.06)) 0%,transparent 55%);
+}
+
+/* ── LAYOUT WRAPPER ── */
+.phone-outer{display:flex;align-items:flex-start;gap:0;position:relative;}
+
+/* ── PHONE ── */
+.phone-frame{
+  width:370px; max-width:100%;
+  background:var(--bg-phone);
+  border-radius:40px 0 0 40px;
+  border:1.5px solid rgba(190,120,60,.25); border-right:none;
+  overflow:hidden; position:relative;
+  box-shadow:-20px 40px 80px rgba(150,80,30,.16),inset 0 0 0 1px rgba(220,170,80,.07);
+  background-image:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(220,160,60,.06) 0%,transparent 60%);
+}
+
+/* Tier badge classes used inside hamburger menu */
+.t-core{background:rgba(201,168,76,.15);color:var(--gold);}
+.t-plus{background:rgba(94,155,181,.18);color:var(--sky);}
+.t-pro{background:rgba(140,135,194,.18);color:var(--lavender);}
+.t-addon{background:rgba(184,115,85,.15);color:var(--clay);}
+
+/* Sidebar feature list — now inside hamburger */
+.sb-features{flex:1;overflow-y:auto;scrollbar-width:none;padding:.3rem 0 1rem;}
+.sb-features::-webkit-scrollbar{display:none;}
+.sb-feat-group{margin-bottom:2px;}
+.sb-feat-grp-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 16px; cursor:pointer; user-select:none; transition:background .15s;
+  border-bottom:1px solid var(--line);
+}
+.sb-feat-grp-hdr:hover{background:rgba(107,144,112,.07);}
+.sb-feat-grp-left{display:flex;align-items:center;gap:8px;}
+.sb-feat-grp-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sb-feat-grp-icon svg{width:13px;height:13px;}
+.sb-feat-grp-name{font-size:11px;font-weight:500;color:var(--fg);letter-spacing:.02em;}
+.sb-feat-grp-chev{width:10px;height:10px;color:var(--fg3);transition:transform .2s;flex-shrink:0;}
+.sb-feat-grp-chev.open{transform:rotate(180deg);}
+.sb-feat-list{display:none;background:rgba(245,240,234,.6);}
+.sb-feat-list.open{display:block;}
+.sb-feat-item{
+  display:flex;align-items:flex-start;gap:7px;
+  padding:8px 16px 8px 20px;
+  border-bottom:1px solid rgba(180,155,130,.1);
+  cursor:pointer;transition:background .12s;
+}
+.sb-feat-item:last-child{border-bottom:none;}
+.sb-feat-item:hover{background:rgba(107,144,112,.08);}
+.sf-dot{width:5px;height:5px;border-radius:50%;margin-top:5px;flex-shrink:0;}
+.sf-body{flex:1;min-width:0;}
+.sf-name{font-size:10px;color:var(--fg);line-height:1.3;}
+.sf-sub{font-size:8px;color:var(--fg3);margin-top:1px;}
+.sf-tier{font-size:7px;font-weight:600;letter-spacing:.05em;padding:2px 6px;border-radius:7px;white-space:nowrap;flex-shrink:0;align-self:flex-start;margin-top:2px;}
+
+/* Tier filter pills inside menu */
+.menu-tier-filter{
+  display:flex;gap:6px;padding:10px 16px;flex-wrap:wrap;
+  border-bottom:1px solid var(--line);background:rgba(250,246,240,.8);
+}
+.menu-tier-pill{
+  display:flex;align-items:center;gap:5px;
+  padding:5px 10px;border-radius:20px;cursor:pointer;
+  border:1px solid var(--line);background:#fff;
+  font-size:9px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--fg3);transition:all .15s;user-select:none;
+}
+.menu-tier-pill:hover{border-color:var(--line2);color:var(--fg2);}
+.menu-tier-pill.active{background:var(--forest);color:#fff;border-color:var(--forest);}
+.menu-tier-dot{width:7px;height:7px;border-radius:50%;}
+
+/* ══════════════════════════════
+   STATUS BAR
+══════════════════════════════ */
+.status-bar{
+  background:var(--bg-header);
+  display:flex; justify-content:space-between; align-items:center;
+  padding:13px 22px 6px;
+  font-size:11px; font-weight:500; color:var(--fg2); letter-spacing:.04em;
+  border-bottom:1px solid var(--line);
+}
+.status-icons{display:flex;align-items:center;gap:5px;}
+
+/* Bell notification */
+.bell-wrap{
+  position:absolute; left:50%; transform:translateX(-50%);
+  top:8px; z-index:50;
+}
+.bell-btn{
+  position:relative; background:none; border:none; cursor:pointer;
+  padding:6px; display:flex; align-items:center; justify-content:center;
+  border-radius:50%; transition:background .2s;
+}
+.bell-btn:hover{background:rgba(107,144,112,.1);}
+.bell-btn svg{width:18px;height:18px;stroke:var(--fg3);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;}
+.bell-dot{
+  position:absolute; top:4px; right:4px;
+  width:7px; height:7px; border-radius:50%;
+  background:var(--crimson);
+  border:1.5px solid var(--forest);
+  animation:bellPulse 2s ease-in-out infinite;
+}
+@keyframes bellPulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.7;transform:scale(1.15);}}
+.bell-btn.shake svg{animation:bellShake .5s ease;}
+@keyframes bellShake{0%,100%{transform:rotate(0);}20%{transform:rotate(-15deg);}40%{transform:rotate(15deg);}60%{transform:rotate(-10deg);}80%{transform:rotate(8deg);}}
+
+/* Notification dropdown */
+.notif-panel{
+  position:absolute; top:38px; left:50%; transform:translateX(-50%);
+  width:240px; background:#fff;
+  border:1px solid var(--line2); border-radius:var(--r);
+  box-shadow:0 16px 40px rgba(180,140,100,.18);
+  display:none; z-index:200; overflow:hidden;
+}
+.notif-panel.show{display:block;animation:dropIn .2s ease;}
+@keyframes dropIn{from{opacity:0;transform:translateX(-50%) translateY(-8px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
+.notif-hdr{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px 12px; border-bottom:1px solid var(--line);
+  font-size:10px; font-weight:500; letter-spacing:.07em; text-transform:uppercase; color:var(--fg3);
+}
+.notif-badge{background:var(--crimson);color:#fff;font-size:8px;font-weight:700;padding:1px 6px;border-radius:10px;}
+.notif-clear{font-size:8px;color:var(--sage);cursor:pointer;letter-spacing:.03em;}
+.notif-clear:hover{color:var(--forest);}
+.notif-item{
+  display:flex; align-items:flex-start; gap:9px;
+  padding:10px 12px; border-bottom:1px solid rgba(180,155,130,.1);
+  cursor:pointer; transition:background .12s;
+}
+.notif-item:hover{background:rgba(107,144,112,.06);}
+.notif-item:last-child{border-bottom:none;}
+.notif-icon{
+  width:28px; height:28px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;
+}
+.notif-icon svg{width:12px;height:12px;}
+.notif-text{flex:1;}
+.notif-title{font-size:10px;font-weight:500;color:var(--fg);line-height:1.3;}
+.notif-sub{font-size:9px;color:var(--fg3);margin-top:1px;line-height:1.4;}
+.notif-time{font-size:8px;color:var(--fg3);white-space:nowrap;margin-top:2px;}
+.notif-unread{width:5px;height:5px;border-radius:50%;background:var(--sage);flex-shrink:0;margin-top:6px;}
+
+/* ══════════════════════════════
+   APP HEADER
+══════════════════════════════ */
+.app-header{
+  background:var(--bg-header); padding:10px 18px 0;
+  border-bottom:1px solid var(--line); position:relative; overflow:visible;
+}
+.app-header::after{
+  content:''; position:absolute; bottom:-1px; left:0; right:0; height:1px;
+  background:linear-gradient(90deg,transparent,rgba(201,168,76,.4),rgba(107,144,112,.3),transparent); opacity:.6;
+}
+.header-row{display:flex;align-items:center;justify-content:space-between;padding:0;}
+
+/* LOGO + WORDMARK */
+.logo-mark{display:flex;align-items:center;gap:8px;}
+.logo-svg-wrap{width:32px;height:32px;flex-shrink:0;}
+.wordmark{
+  font-family:'Fraunces',serif; font-size:22px;
+  font-weight:300; font-style:italic; letter-spacing:.06em; color:var(--forest); line-height:1;
+}
+.wordmark em{color:var(--gold);font-style:italic;}
+
+.header-right{display:flex;align-items:center;gap:8px;}
+
+/* EN|ES toggle */
+.lang-toggle{
+  display:flex; align-items:center;
+  background:#fff; border:1px solid var(--line2);
+  border-radius:20px; padding:3px; gap:1px;
+}
+.lang-btn{
+  font-size:9px; font-weight:500; letter-spacing:.05em;
+  padding:3px 9px; border-radius:14px; cursor:pointer; transition:all .2s;
+  color:var(--fg3); border:none; background:transparent; font-family:'Instrument Sans',sans-serif;
+}
+.lang-btn.on{background:var(--forest);color:#fff;font-weight:600;}
+.lang-btn:hover:not(.on){color:var(--fg2);}
+
+.streak-badge{
+  display:flex; align-items:center; gap:5px;
+  background:rgba(201,168,76,.12); border:1px solid rgba(201,168,76,.35);
+  border-radius:20px; padding:4px 10px;
+  font-size:10px; font-weight:500; color:var(--gold); letter-spacing:.04em;
+}
+.streak-leaf{width:7px;height:9px;background:var(--sage);clip-path:ellipse(50% 100% at 50% 100%);}
+
+.header-sub{margin-top:6px;padding:0 18px 14px;display:flex;justify-content:space-between;align-items:flex-end;}
+.date-small{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--fg3);}
+.date-large{font-family:'Fraunces',serif;font-size:15px;font-weight:300;color:var(--fg);margin-top:1px;}
+.greeting-text{font-family:'Fraunces',serif;font-size:12px;font-style:italic;color:var(--gold);opacity:.9;}
+
+/* ══════════════════════════════
+   STATS STRIP
+══════════════════════════════ */
+.stats-strip{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line);background:var(--bg-stat);}
+.stat-cell{padding:10px 4px;text-align:center;border-right:1px solid var(--line);}
+.stat-cell:last-child{border-right:none;}
+.stat-n{font-family:'Fraunces',serif;font-size:20px;font-weight:400;color:var(--fg);line-height:1.1;}
+.stat-n.accent{color:var(--gold);}
+.stat-l{font-size:8px;color:var(--fg3);letter-spacing:.07em;text-transform:uppercase;margin-top:1px;}
+
+/* ══════════════════════════════
+   TAB STRIP
+══════════════════════════════ */
+.tab-strip{background:var(--bg-tab-strip);border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none;}
+.tab-strip::-webkit-scrollbar{display:none;}
+.tab-row{display:flex;padding:0 12px;}
+.tab{
+  font-size:9.5px; font-weight:500; letter-spacing:.08em; text-transform:uppercase;
+  padding:9px 11px; border-bottom:2px solid transparent; color:var(--fg3);
+  cursor:pointer; white-space:nowrap; transition:all .2s; flex-shrink:0;
+}
+.tab:hover{color:var(--fg2);}
+.tab.on{color:var(--sage);border-bottom-color:var(--sage);}
+
+/* ══════════════════════════════
+   SECTIONS
+══════════════════════════════ */
+.section{display:none;flex-direction:column;gap:12px;padding:14px 14px 90px;min-height:520px;background:var(--bg-page);}
+.section.vis{display:flex;}
+@keyframes riseIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.section.vis>*{animation:riseIn .32s ease both;}
+.section.vis>*:nth-child(1){animation-delay:.03s;}
+.section.vis>*:nth-child(2){animation-delay:.07s;}
+.section.vis>*:nth-child(3){animation-delay:.11s;}
+.section.vis>*:nth-child(4){animation-delay:.15s;}
+.section.vis>*:nth-child(5){animation-delay:.19s;}
+
+/* CARDS */
+.card{
+  background:var(--bg-card);
+  border:1px solid var(--line); border-radius:var(--r); padding:14px;
+  position:relative; overflow:hidden;
+  box-shadow:0 2px 12px rgba(180,140,100,.08);
+}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,.3),transparent);}
+.card-gold{background:linear-gradient(135deg,#fffbf0 0%,#fff8e8 100%);border-color:rgba(201,168,76,.3);}
+.card-gold::before{background:linear-gradient(90deg,transparent,rgba(201,168,76,.5),transparent);}
+
+/* PANELS */
+.panel{background:#fff;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:0 1px 6px rgba(180,140,100,.06);}
+.panel-hdr{display:flex;align-items:center;justify-content:space-between;padding:11px 13px;cursor:pointer;user-select:none;transition:background .15s;}
+.panel-hdr:hover{background:rgba(107,144,112,.07);}
+.panel-hdr-left{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:500;color:var(--fg);}
+.panel-hdr-left svg{width:12px;height:12px;color:var(--sage);}
+.panel-chev{width:11px;height:11px;color:var(--fg3);transition:transform .2s;}
+.panel-chev.open{transform:rotate(180deg);}
+.panel-body{border-top:1px solid var(--line);padding:13px;}
+.panel-body.hidden{display:none;}
+
+/* HOME section elements */
+.aff-hero{min-height:120px;display:flex;flex-direction:column;justify-content:space-between;}
+.aff-hero-label{font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+.aff-hero-text{font-family:'Fraunces',serif;font-size:15px;font-style:italic;font-weight:300;line-height:1.65;color:var(--forest);flex:1;margin-bottom:10px;}
+.aff-domain-pill{display:inline-flex;align-items:center;gap:4px;}
+.aff-domain-pip{width:5px;height:5px;border-radius:50%;}
+.intention-trio{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;}
+.int-cell{background:#fff;border:1px solid var(--line);border-radius:var(--rs);padding:9px 6px;text-align:center;box-shadow:0 1px 4px rgba(180,140,100,.06);}
+.int-glyph{font-size:15px;margin-bottom:3px;}
+.int-label{font-size:8px;letter-spacing:.05em;text-transform:uppercase;color:var(--fg3);}
+.int-value{font-size:11px;font-weight:500;color:var(--fg);margin-top:2px;}
+
+.quick-quad{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.q-tile{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:12px;cursor:pointer;transition:all .18s;position:relative;overflow:hidden;box-shadow:0 1px 6px rgba(180,140,100,.07);}
+.q-tile:hover{border-color:var(--line2);transform:translateY(-1px);box-shadow:0 4px 16px rgba(180,140,100,.12);}
+.q-tile::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;opacity:0;transition:opacity .2s;}
+.q-tile:hover::after{opacity:1;}
+.q-tile[data-accent="gold"]::after{background:var(--gold);}
+.q-tile[data-accent="sky"]::after{background:var(--sky);}
+.q-tile[data-accent="lav"]::after{background:var(--lavender);}
+.q-tile[data-accent="clay"]::after{background:var(--clay);}
+.q-tile-icon{width:30px;height:30px;border-radius:var(--rm);display:flex;align-items:center;justify-content:center;margin-bottom:7px;}
+.q-tile-icon svg{width:13px;height:13px;}
+.q-tile-name{font-size:11px;font-weight:500;color:var(--fg);}
+.q-tile-sub{font-size:9px;color:var(--fg3);margin-top:1px;}
+.q-tile-badge{position:absolute;top:8px;right:8px;font-size:7px;font-weight:600;letter-spacing:.05em;padding:2px 6px;border-radius:8px;}
+
+/* FILTER PILLS */
+.filter-row{display:flex;gap:4px;flex-wrap:wrap;}
+.fil{font-size:8.5px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;padding:4px 10px;border-radius:20px;border:1px solid var(--line);background:#fff;color:var(--fg3);cursor:pointer;transition:all .15s;}
+.fil:hover{color:var(--fg2);border-color:var(--line2);}
+.fil.on{background:var(--sage);border-color:var(--sage);color:#fff;}
+.fil.eq-on{background:var(--lavender);border-color:var(--lavender);color:#fff;}
+.fil.aq-on{background:var(--sky);border-color:var(--sky);color:#fff;}
+.fil.sq-on{background:var(--sage);border-color:var(--sage);color:#fff;}
+.fil.mh-on{background:var(--blush);border-color:var(--blush);color:#fff;}
+
+/* FLIP CARD */
+.flip-wrap{perspective:1000px;cursor:pointer;}
+.flip-inner{width:100%;height:200px;transform-style:preserve-3d;transition:transform .7s cubic-bezier(.4,0,.2,1);}
+.flip-inner.flipped{transform:rotateY(180deg);}
+.flip-face{
+  position:absolute;inset:0;border-radius:var(--r);
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:20px 16px;gap:9px;border:1px solid rgba(201,168,76,.25);
+  background:linear-gradient(145deg,#fffbf0 0%,#fff8e6 100%);
+  box-shadow:0 4px 20px rgba(201,168,76,.1);
+}
+.flip-face::before{content:'';position:absolute;inset:0;border-radius:var(--r);background:radial-gradient(ellipse 60% 40% at 50% 10%,rgba(201,168,76,.07) 0%,transparent 70%);pointer-events:none;}
+.flip-back{transform:rotateY(180deg);}
+.flip-domain{font-size:8px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;opacity:.6;}
+.flip-quote{font-family:'Fraunces',serif;font-size:14px;font-style:italic;font-weight:300;line-height:1.65;text-align:center;color:var(--forest);}
+.flip-hint{font-size:8px;letter-spacing:.04em;color:var(--fg3);}
+.flip-ref{font-size:11px;text-align:center;font-style:italic;color:var(--fg2);line-height:1.6;}
+.flip-practice{font-size:10px;font-weight:500;text-align:center;color:var(--gold);}
+.fav-btn{position:absolute;top:9px;right:9px;background:none;border:none;cursor:pointer;padding:3px;color:var(--fg3);opacity:.4;transition:all .15s;}
+.fav-btn:hover{opacity:.9;}
+.fav-btn.saved{opacity:1;color:var(--gold);}
+.fav-btn svg{width:12px;height:12px;}
+
+/* CARD CONTROLS */
+.ctrl-row{display:flex;align-items:center;gap:6px;}
+.ctrl-btn{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--fg2);transition:all .15s;flex-shrink:0;box-shadow:0 1px 4px rgba(180,140,100,.07);}
+.ctrl-btn:hover{background:rgba(107,144,112,.1);border-color:var(--sage);}
+.ctrl-btn svg{width:11px;height:11px;}
+.ctrl-main{flex:1;height:34px;border-radius:17px;border:1px solid var(--sage);background:rgba(107,144,112,.1);cursor:pointer;font-size:10.5px;font-weight:500;color:var(--sage);transition:all .15s;font-family:'Instrument Sans',sans-serif;letter-spacing:.05em;}
+.ctrl-main:hover{background:rgba(107,144,112,.2);}
+.card-dots{display:flex;gap:4px;justify-content:center;}
+.cdot{width:4px;height:4px;border-radius:50%;background:rgba(180,155,130,.3);transition:all .3s;}
+.cdot.on{width:14px;border-radius:2px;background:var(--sage);}
+
+/* BREATH */
+.breath-wrap{display:flex;flex-direction:column;align-items:center;gap:14px;}
+.breath-ring-outer{position:relative;width:140px;height:140px;display:flex;align-items:center;justify-content:center;}
+.breath-ring-track{position:absolute;inset:0;border-radius:50%;border:1.5px solid rgba(107,144,112,.25);transform-origin:center;}
+.breath-ring-core{width:92px;height:92px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:#fff;border:1px solid var(--line);box-shadow:0 2px 12px rgba(107,144,112,.1);}
+.b-lbl{font-family:'Fraunces',serif;font-size:14px;font-weight:300;color:var(--forest);}
+.b-sub{font-size:8px;letter-spacing:.05em;color:var(--fg3);text-transform:uppercase;}
+.breath-cycles{display:flex;gap:5px;}
+.bcircle{width:24px;height:24px;border-radius:50%;border:1px solid var(--line);background:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--fg3);transition:all .4s;}
+.bcircle.done{background:rgba(94,155,181,.15);border-color:var(--sky);color:var(--sky);}
+.breath-btns{display:flex;gap:7px;}
+
+/* BUTTONS */
+.btn{height:30px;padding:0 14px;border-radius:15px;border:1px solid var(--line);background:#fff;color:var(--fg2);font-family:'Instrument Sans',sans-serif;font-size:10px;font-weight:500;cursor:pointer;transition:all .15s;letter-spacing:.04em;}
+.btn:hover{background:rgba(107,144,112,.1);color:var(--fg);}
+.btn-primary{border-color:var(--sage);color:var(--sage);}
+.btn-primary:hover{background:rgba(107,144,112,.15);}
+
+/* MOOD */
+.mood-grid{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;}
+.mood-btn{width:52px;height:52px;border-radius:var(--rs);border:1px solid var(--line);background:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:all .18s;box-shadow:0 1px 4px rgba(180,140,100,.06);}
+.mood-btn:hover{background:rgba(107,144,112,.07);transform:translateY(-2px);}
+.mood-btn.chosen{border-width:1.5px;}
+.mood-btn .mi{font-size:17px;line-height:1;}
+.mood-btn .ml{font-size:7px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;opacity:.45;color:var(--fg3);}
+.mood-feedback{text-align:center;font-family:'Fraunces',serif;font-size:13px;font-style:italic;color:var(--fg2);min-height:18px;}
+
+/* JOURNAL */
+.journal-prompt-box{background:rgba(201,168,76,.07);border-left:2px solid var(--gold);border-radius:0 var(--rm) var(--rm) 0;padding:9px 11px;margin-bottom:9px;}
+.journal-prompt-box p{font-family:'Fraunces',serif;font-size:12px;font-style:italic;font-weight:300;color:var(--fg2);line-height:1.6;}
+.journal-area{width:100%;min-height:95px;resize:vertical;font-family:'Instrument Sans',sans-serif;font-size:12px;line-height:1.7;padding:9px 11px;border-radius:var(--rs);border:1px solid var(--line);background:#fff;color:var(--fg);transition:border-color .15s;}
+.journal-area:focus{outline:none;border-color:rgba(107,144,112,.5);}
+.journal-area::placeholder{color:var(--fg3);}
+.chart-wrap{position:relative;height:170px;}
+.chart-legend{display:flex;gap:9px;flex-wrap:wrap;margin-top:7px;}
+.cl-item{display:flex;align-items:center;gap:4px;font-size:9px;color:var(--fg2);}
+.cl-pip{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+
+/* WELLNESS */
+.track-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.track-tile{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:11px;cursor:pointer;transition:all .15s;box-shadow:0 1px 5px rgba(180,140,100,.06);}
+.track-tile:hover{border-color:var(--line2);box-shadow:0 3px 12px rgba(180,140,100,.1);}
+.tt-icon{width:26px;height:26px;border-radius:var(--rm);display:flex;align-items:center;justify-content:center;margin-bottom:7px;}
+.tt-icon svg{width:12px;height:12px;}
+.tt-name{font-size:10px;font-weight:500;color:var(--fg);}
+.tt-sub{font-size:8px;color:var(--fg3);margin-top:1px;}
+.tt-val{font-family:'Fraunces',serif;font-size:18px;margin-top:5px;}
+.tt-bar{height:2.5px;border-radius:2px;background:var(--line);margin-top:5px;overflow:hidden;}
+.tt-fill{height:100%;border-radius:2px;transition:width .6s ease;}
+.iq-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;}
+.iq-box{background:#fff;border:1px solid var(--line);border-radius:var(--rs);padding:7px 4px;text-align:center;box-shadow:0 1px 4px rgba(180,140,100,.05);}
+.iq-label{font-size:7px;letter-spacing:.08em;text-transform:uppercase;color:var(--fg3);margin-bottom:3px;}
+.iq-val{font-family:'Fraunces',serif;font-size:18px;}
+.score-hero{display:flex;align-items:center;gap:12px;}
+.score-ring{position:relative;width:60px;height:60px;flex-shrink:0;}
+.score-ring canvas{position:absolute;inset:0;}
+.score-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:17px;color:var(--sage);}
+.score-title{font-family:'Fraunces',serif;font-size:14px;font-style:italic;font-weight:300;color:var(--fg);margin-bottom:2px;}
+.score-sub{font-size:9px;color:var(--fg3);line-height:1.5;}
+
+/* EXPLORE */
+.explore-hero-card{height:120px;border-radius:var(--r);position:relative;overflow:hidden;border:1px solid rgba(94,155,181,.3);background:linear-gradient(135deg,#eef6ff 0%,#e8f4fd 100%);display:flex;align-items:flex-end;padding:14px;}
+.explore-hero-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 50% 50% at 80% 20%,rgba(94,155,181,.15) 0%,transparent 60%),radial-gradient(ellipse 40% 60% at 20% 80%,rgba(107,144,112,.12) 0%,transparent 60%);}
+.explore-title{font-family:'Fraunces',serif;font-size:15px;font-style:italic;font-weight:300;color:var(--forest);position:relative;z-index:1;}
+.explore-sub{font-size:9px;color:var(--fg3);margin-top:2px;position:relative;z-index:1;}
+.disc-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.disc-card{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:11px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;box-shadow:0 1px 5px rgba(180,140,100,.06);}
+.disc-card:hover{border-color:var(--line2);box-shadow:0 3px 12px rgba(180,140,100,.1);}
+.disc-glyph{font-size:18px;margin-bottom:5px;}
+.disc-name{font-size:10px;font-weight:500;color:var(--fg);}
+.disc-sub{font-size:8px;color:var(--fg3);margin-top:1px;}
+
+/* TOOLS */
+.sec-hdr-lbl{font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--fg3);padding-bottom:7px;border-bottom:1px solid var(--line);margin-bottom:7px;}
+.tool-list{display:flex;flex-direction:column;gap:5px;}
+.tool-row{display:flex;align-items:center;gap:9px;background:#fff;border:1px solid var(--line);border-radius:var(--rs);padding:9px 11px;cursor:pointer;transition:all .15s;box-shadow:0 1px 4px rgba(180,140,100,.05);}
+.tool-row:hover{border-color:var(--line2);box-shadow:0 3px 10px rgba(180,140,100,.1);}
+.tool-ico{width:28px;height:28px;border-radius:var(--rm);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.tool-ico svg{width:12px;height:12px;}
+.tool-info{flex:1;}
+.tool-name{font-size:11px;font-weight:500;color:var(--fg);}
+.tool-desc{font-size:9px;color:var(--fg3);margin-top:1px;}
+.tool-badge{font-size:7px;font-weight:600;letter-spacing:.05em;padding:2px 7px;border-radius:8px;}
+
+/* SOCIAL */
+.social-member{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid var(--line);}
+.social-member:last-child{border-bottom:none;}
+.s-avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;}
+.s-name{font-size:11px;font-weight:500;color:var(--fg);}
+.s-role{font-size:9px;color:var(--fg3);}
+.s-action{margin-left:auto;}
+.btn-xs{height:24px;padding:0 9px;border-radius:12px;border:1px solid var(--line);background:#fff;color:var(--fg2);font-family:'Instrument Sans',sans-serif;font-size:8.5px;font-weight:500;letter-spacing:.04em;cursor:pointer;transition:all .15s;}
+.btn-xs:hover{background:rgba(107,144,112,.1);color:var(--fg);}
+.btn-xs.active{background:rgba(107,144,112,.12);border-color:var(--sage);color:var(--sage);}
+
+/* ADD-ONS */
+.addon-tile{border-radius:var(--r);padding:13px;border:1px solid;}
+.addon-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.addon-name{font-family:'Fraunces',serif;font-size:13px;font-style:italic;font-weight:300;}
+.addon-badge{font-size:7px;font-weight:600;letter-spacing:.06em;padding:2px 7px;border-radius:9px;}
+.addon-desc{font-size:10px;color:var(--fg2);line-height:1.6;margin-bottom:10px;}
+.addon-toggle{display:flex;align-items:center;justify-content:space-between;padding-top:8px;border-top:1px solid;}
+.toggle-label{font-size:10px;color:var(--fg2);}
+.toggle-sw{width:34px;height:18px;border-radius:9px;background:rgba(180,155,130,.15);border:1px solid var(--line);position:relative;cursor:pointer;transition:all .2s;}
+.toggle-sw.on{background:rgba(107,144,112,.25);border-color:var(--sage);}
+.toggle-sw::after{content:'';position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:var(--fg3);transition:all .2s;}
+.toggle-sw.on::after{left:18px;background:var(--sage);}
+
+/* STRESS */
+.stress-row{display:flex;gap:5px;justify-content:center;}
+.stress-btn{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--fg2);font-family:'Instrument Sans',sans-serif;font-size:11px;font-weight:500;cursor:pointer;transition:all .15s;}
+.stress-btn:hover{background:rgba(107,144,112,.12);border-color:var(--sage);}
+.tag-chip{font-size:9px;padding:3px 8px;border-radius:11px;border:1px solid;cursor:pointer;}
+
+/* ══════════════════════════════
+   BOTTOM NAV
+══════════════════════════════ */
+.bottom-nav{
+  position:sticky;bottom:0;
+  background:var(--bg-bottom-nav);
+  border-top:1px solid var(--line);
+  backdrop-filter:blur(8px);
+  display:flex; padding:7px 0 13px;
+  z-index:100;
+  box-shadow:0 -4px 20px rgba(180,140,100,.08);
+}
+.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:3px 0;transition:all .15s;}
+.bn-icon{width:22px;height:22px;display:flex;align-items:center;justify-content:center;}
+.bn-icon svg{width:18px;height:18px;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;transition:all .2s;}
+.bn-label{font-size:7px;letter-spacing:.07em;text-transform:uppercase;font-weight:500;transition:all .2s;}
+/* Active: scale up icon, bold label */
+.bn-item.on .bn-icon svg{transform:scale(1.18);filter:drop-shadow(0 1px 4px currentColor);}
+.bn-item.on .bn-label{font-weight:700;letter-spacing:.06em;}
+/* Inactive: desaturate slightly */
+.bn-item:not(.on) .bn-icon svg{opacity:.55;}
+.bn-item:not(.on) .bn-label{opacity:.55;}
+/* menu btn */
+.bn-item.menu-btn .bn-icon{flex-direction:column;gap:3px;background:none;}
+.bn-menu-lines{display:flex;flex-direction:column;gap:3px;align-items:center;}
+.bn-menu-lines span{display:block;height:1.5px;border-radius:1px;transition:all .2s;}
+.bn-menu-lines span:nth-child(1){width:14px;}
+.bn-menu-lines span:nth-child(2){width:10px;}
+.bn-menu-lines span:nth-child(3){width:12px;}
+.bn-item.menu-btn.on .bn-menu-lines span{width:14px;}
+
+/* ══════════════════════════════
+   UNIQLO MENU OVERLAY
+══════════════════════════════ */
+.uniqlo-overlay{
+  position:absolute; inset:0; z-index:300;
+  display:none; flex-direction:column;
+  background:var(--bg-page);
+  border-radius:40px 0 0 40px;
+  overflow:hidden;
+  animation:menuSlideUp .3s cubic-bezier(.4,0,.2,1);
+}
+.uniqlo-overlay.open{display:flex;}
+@keyframes menuSlideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+
+.uniqlo-top{
+  padding:16px 18px 12px;
+  border-bottom:1px solid var(--line);
+  display:flex; align-items:center; justify-content:space-between;
+  background:var(--bg-header); flex-shrink:0;
+}
+.uniqlo-top-title{font-family:'Fraunces',serif;font-size:18px;font-style:italic;font-weight:300;color:var(--forest);}
+.uniqlo-close{background:none;border:none;cursor:pointer;padding:6px;color:var(--fg3);display:flex;border-radius:50%;transition:background .15s;}
+.uniqlo-close:hover{background:rgba(107,144,112,.12);color:var(--fg);}
+.uniqlo-close svg{width:16px;height:16px;}
+
+/* Uniqlo menu top-tabs */
+.uniqlo-tabs{
+  display:flex; border-bottom:1px solid var(--line);
+  background:var(--bg-header); flex-shrink:0;
+}
+.uq-tab{
+  flex:1; text-align:center; padding:11px 6px;
+  font-size:9.5px; font-weight:500; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--fg3); cursor:pointer; transition:all .2s;
+  border-bottom:2px solid transparent; position:relative;
+}
+.uq-tab.on{color:var(--sage);border-bottom-color:var(--sage);}
+.uq-tab:hover{color:var(--fg2);}
+
+.uniqlo-body{flex:1;overflow-y:auto;scrollbar-width:none;}
+.uniqlo-body::-webkit-scrollbar{display:none;}
+
+.uq-section{display:none;padding:0 0 88px;}
+.uq-section.vis{display:block;animation:riseIn .25s ease both;}
+
+.uq-block{border-bottom:1px solid var(--line);}
+.uq-block-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:13px 16px; cursor:pointer; user-select:none; transition:background .15s;
+}
+.uq-block-hdr:hover{background:rgba(107,144,112,.06);}
+.uq-block-hdr-left{display:flex;align-items:center;gap:10px;}
+.uq-block-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.uq-block-icon svg{width:15px;height:15px;}
+.uq-block-name{font-size:13px;font-weight:500;color:var(--fg);}
+.uq-block-desc{font-size:10px;color:var(--fg3);margin-top:1px;}
+.uq-block-chev{width:12px;height:12px;color:var(--fg3);transition:transform .2s;flex-shrink:0;}
+.uq-block-chev.open{transform:rotate(90deg);}
+.uq-block-body{display:none;background:rgba(245,240,234,.5);}
+.uq-block-body.open{display:block;}
+.uq-feature-row{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 16px 10px 22px;
+  border-bottom:1px solid rgba(180,155,130,.1);
+  cursor:pointer;transition:background .12s;
+}
+.uq-feature-row:hover{background:rgba(107,144,112,.07);}
+.uq-feature-row:last-child{border-bottom:none;}
+.uq-feat-pip{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.uq-feat-name{flex:1;font-size:11px;color:var(--fg);line-height:1.3;}
+.uq-feat-sub{font-size:9px;color:var(--fg3);margin-top:1px;}
+.uq-feat-badge{font-size:7.5px;font-weight:600;letter-spacing:.05em;padding:2px 8px;border-radius:10px;}
+.uq-feat-arrow{width:10px;height:10px;color:var(--fg3);flex-shrink:0;}
+
+.uniqlo-footer{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:10px 16px 18px;
+  background:linear-gradient(to top,var(--bg-page) 65%,transparent);
+  border-top:1px solid var(--line);
+  display:flex;gap:8px;
+}
+.uq-cta{
+  flex:1;height:40px;border-radius:20px;border:none;cursor:pointer;
+  font-family:'Instrument Sans',sans-serif;font-size:11px;font-weight:500;
+  letter-spacing:.06em;text-transform:uppercase;transition:all .2s;
+}
+.uq-cta-primary{background:var(--forest);color:#fff;}
+.uq-cta-primary:hover{background:var(--fern);}
+.uq-cta-outline{background:transparent;border:1px solid var(--line2);color:var(--fg2);}
+.uq-cta-outline:hover{background:rgba(107,144,112,.1);color:var(--fg);}
+
+/* Menu footer help links */
+.menu-footer-links{
+  display:flex;align-items:center;justify-content:center;
+  flex-wrap:wrap;gap:2px;padding-top:2px;
+}
+.menu-footer-link{
+  font-size:9px;color:var(--fg3);cursor:pointer;padding:2px 4px;
+  letter-spacing:.02em;transition:color .15s;white-space:nowrap;
+}
+.menu-footer-link:hover{color:var(--sage);}
+.menu-footer-sep{font-size:9px;color:var(--line2);padding:0 1px;}
+
+/* ══════════════════════════════
+   TOAST
+══════════════════════════════ */
+.toast{
+  position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(16px);
+  background:var(--forest);border:1px solid var(--fern);
+  color:#fff;font-size:10px;font-weight:500;letter-spacing:.05em;
+  padding:7px 15px;border-radius:20px;
+  opacity:0;transition:all .3s;white-space:nowrap;z-index:900;pointer-events:none;
+  box-shadow:0 4px 20px rgba(26,46,30,.25);
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ── MEMBER ICON & DROPDOWN ── */
+.member-btn{
+  width:30px;height:30px;border-radius:50%;
+  background:linear-gradient(135deg,var(--forest) 0%,var(--fern) 100%);
+  border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;position:relative;transition:all .2s;
+  box-shadow:0 2px 8px rgba(26,46,30,.2);
+}
+.member-btn:hover{transform:scale(1.05);box-shadow:0 3px 12px rgba(26,46,30,.3);}
+.member-btn svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;}
+.member-dot{
+  position:absolute;bottom:0;right:0;width:8px;height:8px;border-radius:50%;
+  background:#22c55e;border:1.5px solid var(--bg-header);
+}
+.member-panel{
+  position:absolute;top:42px;right:0;width:260px;max-height:520px;
+  background:var(--bg-card);border:1px solid var(--line);border-radius:var(--r);
+  box-shadow:0 12px 40px rgba(0,0,0,.18);
+  display:none;z-index:400;overflow:hidden;
+  transition:background .3s;
+}
+.member-panel.show{display:block;animation:dropIn .2s ease;}
+.member-panel-head{
+  padding:13px 14px;background:linear-gradient(135deg,var(--bg-card2) 0%,var(--bg-stat) 100%);
+  border-bottom:1px solid var(--line);
+}
+.member-panel-name{font-family:'Fraunces',serif;font-size:14px;font-weight:300;font-style:italic;color:var(--fg);}
+.member-panel-plan{display:inline-flex;align-items:center;gap:4px;margin-top:3px;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.3);border-radius:12px;padding:2px 8px;font-size:8px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);}
+.member-menu-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 14px;cursor:pointer;transition:background .12s;
+  border-bottom:1px solid var(--line);font-size:11px;color:var(--fg);
+}
+.member-menu-item:last-child{border-bottom:none;}
+.member-menu-item:hover{background:rgba(107,144,112,.07);}
+.member-menu-icon{width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.member-menu-icon svg{width:11px;height:11px;}
+.member-menu-label{flex:1;}
+.member-menu-badge{font-size:7.5px;font-weight:600;padding:1px 6px;border-radius:8px;background:rgba(224,48,80,.1);color:var(--crimson);}
+
+@keyframes bExpand{from{transform:scale(1);}to{transform:scale(1.38);}}
+@keyframes bContract{from{transform:scale(1.38);}to{transform:scale(1);}}
+</style>
+</head>
+<body>
+
+<div class="phone-outer">
+
+<!-- ═══════════════════════ PHONE ═══════════════════════ -->
+<div class="phone-frame">
+
+  <!-- STATUS BAR -->
+  <div class="status-bar" style="position:relative;">
+    <span id="clock">09:41</span>
+    <!-- BELL — top center -->
+    <div class="bell-wrap">
+      <button class="bell-btn" id="bellBtn" onclick="toggleNotif()">
+        <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <div class="bell-dot" id="bellDot"></div>
+      </button>
+      <!-- Notification dropdown -->
+      <div class="notif-panel" id="notifPanel">
+        <div class="notif-hdr">
+          <span>Notifications</span>
+          <span class="notif-badge" id="notifCount">3</span>
+          <span class="notif-clear" onclick="clearNotifs()">Clear all</span>
+        </div>
+        <div id="notif-list">
+          <div class="notif-item" onclick="markNotifRead(this)">
+            <div class="notif-icon" style="background:rgba(107,144,112,.15);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--mint)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </div>
+            <div class="notif-text">
+              <div class="notif-title">Morning affirmation ready</div>
+              <div class="notif-sub">Your daily EQ card is waiting for you</div>
+              <div class="notif-time">2 min ago</div>
+            </div>
+            <div class="notif-unread"></div>
+          </div>
+          <div class="notif-item" onclick="markNotifRead(this)">
+            <div class="notif-icon" style="background:rgba(201,168,76,.15);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold2)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <div class="notif-text">
+              <div class="notif-title">7-day streak! 🌿</div>
+              <div class="notif-sub">Incredible consistency. Keep growing.</div>
+              <div class="notif-time">1 hr ago</div>
+            </div>
+            <div class="notif-unread"></div>
+          </div>
+          <div class="notif-item" onclick="markNotifRead(this)">
+            <div class="notif-icon" style="background:rgba(94,155,181,.15);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--sky2)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div class="notif-text">
+              <div class="notif-title">Breathwork reminder</div>
+              <div class="notif-sub">Your 4·4·4·4 session awaits</div>
+              <div class="notif-time">3 hr ago</div>
+            </div>
+            <div class="notif-unread"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="status-icons">
+      <svg width="14" height="10" viewBox="0 0 14 10" fill="none"><rect x="0" y="3.5" width="2.5" height="6.5" rx=".8" fill="#6b9070"/><rect x="3.5" y="2" width="2.5" height="8" rx=".8" fill="#6b9070"/><rect x="7" y=".5" width="2.5" height="9.5" rx=".8" fill="#6b9070"/><rect x="10.5" y="0" width="2.5" height="10" rx=".8" fill="#6b9070" opacity=".3"/></svg>
+      <svg width="16" height="10" viewBox="0 0 16 10" fill="none"><rect x="0" y=".5" width="13" height="9" rx="2" stroke="#6b9070" stroke-width="1.2"/><rect x="1.5" y="2" width="8" height="6" rx="1" fill="#6b9070"/><rect x="13.5" y="3.5" width="1.5" height="3" rx=".8" fill="#6b9070"/></svg>
+    </div>
+  </div>
+
+  <!-- APP HEADER -->
+  <div class="app-header">
+
+    <div class="header-row">
+      <!-- LOGO + WORDMARK -->
+      <div class="logo-mark">
+        <div class="logo-svg-wrap">
+          <!-- InnerCircle-inspired logo: red/dark interlocking crescent arcs -->
+          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="lg1" cx="35%" cy="30%" r="75%">
+                <stop offset="0%" stop-color="#1a1030"/>
+                <stop offset="100%" stop-color="#0e0820"/>
+              </radialGradient>
+              <radialGradient id="lg2" cx="60%" cy="50%" r="70%">
+                <stop offset="0%" stop-color="#ff2244"/>
+                <stop offset="45%" stop-color="#cc1133"/>
+                <stop offset="100%" stop-color="#1a1030"/>
+              </radialGradient>
+            </defs>
+            <!-- Left dark crescent -->
+            <circle cx="14" cy="20" r="13" fill="url(#lg1)" opacity=".95"/>
+            <circle cx="21" cy="20" r="13" fill="var(--bg-phone)"/>
+            <!-- Right red crescent -->
+            <circle cx="26" cy="20" r="13" fill="url(#lg2)" opacity=".92"/>
+            <circle cx="19" cy="20" r="13" fill="var(--bg-phone)" opacity=".85"/>
+          </svg>
+        </div>
+        <div class="wordmark">Euno<em>ia</em></div>
+      </div>
+      <div class="header-right" style="position:relative;">
+        <!-- EN | ES TOGGLE -->
+        <div class="lang-toggle">
+          <button class="lang-btn on" id="langEN" onclick="setLang('EN')">EN</button>
+          <button class="lang-btn" id="langES" onclick="setLang('ES')">ES</button>
+        </div>
+        <div class="streak-badge">
+          <div class="streak-leaf"></div>
+          <span>7 days</span>
+        </div>
+        <!-- MEMBER ICON -->
+        <button class="member-btn" id="memberBtn" onclick="toggleMember()">
+          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <div class="member-dot"></div>
+        </button>
+        <!-- MEMBER DROPDOWN -->
+        <div class="member-panel" id="memberPanel">
+          <div class="member-panel-head">
+            <div class="member-panel-name">Good morning, Aryan</div>
+            <div class="member-panel-plan">✦ Pro Member</div>
+          </div>
+          <div class="member-menu-item" onclick="closeMember()">
+            <div class="member-menu-icon" style="background:rgba(94,155,181,.12);"><svg viewBox="0 0 24 24" stroke="var(--sky)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
+            <span class="member-menu-label">Subscription History</span>
+            <span class="member-menu-badge">Pro</span>
+          </div>
+          <div class="member-menu-item" onclick="closeMember()">
+            <div class="member-menu-icon" style="background:rgba(107,144,112,.12);"><svg viewBox="0 0 24 24" stroke="var(--sage)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+            <span class="member-menu-label">Profile</span>
+          </div>
+          <div class="member-menu-item" onclick="openSettings()">
+            <div class="member-menu-icon" style="background:rgba(140,135,194,.12);"><svg viewBox="0 0 24 24" stroke="var(--lavender)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+            <span class="member-menu-label">Settings</span>
+            <svg style="width:10px;height:10px;stroke:var(--fg3);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg>
+          </div>
+
+          <!-- SETTINGS OVERLAY (lives inside member-panel) -->
+          <div class="settings-overlay" id="settingsOverlay">
+            <div class="settings-head">
+              <button class="settings-back" onclick="closeSettings()">
+                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+              <div class="settings-title">Settings</div>
+            </div>
+            <div class="settings-body">
+
+              <!-- LIGHT THEMES -->
+              <div class="settings-section-label">🌞 Temas Españoles — Light</div>
+              <div class="theme-grid">
+                <div class="theme-card active" id="tc-andalucia" onclick="setTheme('andalucia',this,'tc-andalucia')">
+                  <div class="theme-preview" style="background:linear-gradient(135deg,#F2E8D8 0%,#e8c898 40%,#c9824a 100%);"></div>
+                  <div class="theme-card-name">Andalucía</div>
+                </div>
+                <div class="theme-card" id="tc-azulejo" onclick="setTheme('azulejo',this,'tc-azulejo')">
+                  <div class="theme-preview" style="background:linear-gradient(135deg,#E8EFF5 0%,#b8d0e8 40%,#4a82c8 100%);"></div>
+                  <div class="theme-card-name">Azulejo</div>
+                </div>
+                <div class="theme-card" id="tc-flamenco" onclick="setTheme('flamenco',this,'tc-flamenco')">
+                  <div class="theme-preview" style="background:linear-gradient(135deg,#F5E8E8 0%,#e8b0b0 40%,#c83a3a 100%);"></div>
+                  <div class="theme-card-name">Flamenco</div>
+                </div>
+                <div class="theme-card" id="tc-seville" onclick="setTheme('seville',this,'tc-seville')">
+                  <div class="theme-preview" style="background:linear-gradient(135deg,#F5F0E2 0%,#e8d880 40%,#c4a030 100%);"></div>
+                  <div class="theme-card-name">Sevilla</div>
+                </div>
+                <div class="theme-card" id="tc-granada" onclick="setTheme('granada',this,'tc-granada')">
+                  <div class="theme-preview" style="background:linear-gradient(135deg,#EAE8F0 0%,#c8b8e8 40%,#7a5cb8 100%);"></div>
+                  <div class="theme-card-name">Granada</div>
+                </div>
+              </div>
+
+              <!-- DARK THEMES -->
+              <div class="settings-section-label">🌙 Temas Oscuros — Dark</div>
+              <div class="theme-grid">
+                <div class="theme-card" id="tc-dark-obsidian" onclick="setTheme('dark-obsidian',this,'tc-dark-obsidian')">
+                  <div class="theme-preview" style="background:linear-gradient(135deg,#0f0f12 0%,#1e1440 50%,#6030c0 100%); box-shadow:inset 0 0 20px rgba(100,40,200,.3);"></div>
+                  <div class="theme-card-name" style="background:#141418;color:#8878c0;">Obsidian</div>
+                </div>
+                <div class="theme-card" id="tc-dark-midnight" onclick="setTheme('dark-midnight',this,'tc-dark-midnight')">
+                  <div class="theme-preview" style="background:linear-gradient(135deg,#0a0e1a 0%,#0d1e40 50%,#2040a0 100%); box-shadow:inset 0 0 20px rgba(40,80,200,.3);"></div>
+                  <div class="theme-card-name" style="background:#0d1220;color:#6080c0;">Midnight</div>
+                </div>
+                <div class="theme-card" id="tc-dark-ember" onclick="setTheme('dark-ember',this,'tc-dark-ember')">
+                  <div class="theme-preview" style="background:linear-gradient(135deg,#120a06 0%,#3a1808 50%,#d04010 100%); box-shadow:inset 0 0 20px rgba(200,80,20,.3);"></div>
+                  <div class="theme-card-name" style="background:#180e08;color:#c06030;">Ember</div>
+                </div>
+                <div class="theme-card" id="tc-dark-aurora" onclick="setTheme('dark-aurora',this,'tc-dark-aurora')">
+                  <div class="theme-preview" style="background:linear-gradient(135deg,#070e10 0%,#082818 50%,#10a060 100%); box-shadow:inset 0 0 20px rgba(20,180,100,.3);"></div>
+                  <div class="theme-card-name" style="background:#0a1318;color:#30a070;">Aurora</div>
+                </div>
+                <div class="theme-card" id="tc-dark-velvet" onclick="setTheme('dark-velvet',this,'tc-dark-velvet')">
+                  <div class="theme-preview" style="background:linear-gradient(135deg,#0e080e 0%,#28082a 50%,#a020a0 100%); box-shadow:inset 0 0 20px rgba(160,40,160,.3);"></div>
+                  <div class="theme-card-name" style="background:#140c14;color:#a060b0;">Velvet</div>
+                </div>
+              </div>
+
+              <!-- OTHER SETTINGS -->
+              <div class="settings-section-label">⚙️ Preferencias</div>
+              <div class="settings-row">
+                <div><div class="settings-row-label">Notifications</div><div class="settings-row-sub">Daily reminders & streaks</div></div>
+                <div class="settings-toggle on" onclick="this.classList.toggle('on')"></div>
+              </div>
+              <div class="settings-row">
+                <div><div class="settings-row-label">Haptic Feedback</div><div class="settings-row-sub">Vibration on interaction</div></div>
+                <div class="settings-toggle on" onclick="this.classList.toggle('on')"></div>
+              </div>
+              <div class="settings-row">
+                <div><div class="settings-row-label">Auto-advance Cards</div><div class="settings-row-sub">Flip affirmations automatically</div></div>
+                <div class="settings-toggle" onclick="this.classList.toggle('on')"></div>
+              </div>
+              <div class="settings-row">
+                <div><div class="settings-row-label">Language</div><div class="settings-row-sub">EN · ES</div></div>
+                <svg style="width:10px;height:10px;stroke:var(--fg3);fill:none;stroke-width:1.8;" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg>
+              </div>
+
+            </div>
+          </div><!-- /settings-overlay -->
+          <div class="member-menu-item" onclick="closeMember()">
+            <div class="member-menu-icon" style="background:rgba(201,168,76,.12);"><svg viewBox="0 0 24 24" stroke="var(--gold)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+            <span class="member-menu-label">Take a Survey</span>
+          </div>
+          <div class="member-menu-item" onclick="closeMember()" style="border-top:1px solid var(--line);">
+            <div class="member-menu-icon" style="background:rgba(224,48,80,.08);"><svg viewBox="0 0 24 24" stroke="var(--crimson)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></div>
+            <span class="member-menu-label" style="color:var(--crimson);">Sign Out</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="header-sub">
+      <div>
+        <div class="date-small" id="dayName">Thursday</div>
+        <div class="date-large" id="dateFull">16 April 2026</div>
+      </div>
+      <div class="greeting-text" id="greeting">Bonne matinée</div>
+    </div>
+  </div>
+
+  <!-- STATS STRIP -->
+  <div class="stats-strip">
+    <div class="stat-cell"><div class="stat-n accent" id="s-cards">24</div><div class="stat-l" id="lbl-cards">Cards</div></div>
+    <div class="stat-cell"><div class="stat-n" id="s-saved">8</div><div class="stat-l" id="lbl-saved">Saved</div></div>
+    <div class="stat-cell"><div class="stat-n" id="s-breaths">42</div><div class="stat-l" id="lbl-breaths">Breaths</div></div>
+    <div class="stat-cell"><div class="stat-n" id="s-tasks">5</div><div class="stat-l" id="lbl-tasks">Tasks</div></div>
+  </div>
+
+  <!-- TAB STRIP -->
+  <div class="tab-strip">
+    <div class="tab-row">
+      <div class="tab on" onclick="switchTab('home',this)">Home</div>
+      <div class="tab" onclick="switchTab('affirmations',this)">Affirmations</div>
+      <div class="tab" onclick="switchTab('wellness',this)">Wellness</div>
+      <div class="tab" onclick="switchTab('explore',this)">Explore</div>
+      <div class="tab" onclick="switchTab('tools',this)">Tools</div>
+    </div>
+  </div>
+
+  <!-- ════ HOME ════ -->
+  <div class="section vis" id="home">
+    <div class="card card-gold">
+      <div class="aff-hero">
+        <div class="aff-hero-label" id="aff-label">Today's Affirmation</div>
+        <div class="aff-hero-text">"I adapt with grace to whatever the day brings forth."</div>
+        <div class="aff-domain-pill">
+          <div class="aff-domain-pip" style="background:var(--sky)"></div>
+          <span style="font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--fg3);">Adaptive Intelligence · AQ</span>
+        </div>
+      </div>
+    </div>
+    <div class="intention-trio">
+      <div class="int-cell"><div class="int-glyph">🙏</div><div class="int-label" id="int-gratitude">Gratitude</div><div class="int-value">3 logged</div></div>
+      <div class="int-cell"><div class="int-glyph">🎯</div><div class="int-label" id="int-focus">Focus</div><div class="int-value" id="int-focus-val">Deep work</div></div>
+      <div class="int-cell"><div class="int-glyph">💧</div><div class="int-label" id="int-water">Water</div><div class="int-value">4 / 8</div></div>
+    </div>
+    <div class="quick-quad">
+      <div class="q-tile" data-accent="gold" onclick="switchTab('affirmations',null)">
+        <span class="q-tile-badge t-core">CORE</span>
+        <div class="q-tile-icon" style="background:rgba(201,168,76,.15);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--gold2)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+        <div class="q-tile-name" id="qt-aff">Affirmations</div>
+        <div class="q-tile-sub">EQ · AQ · SQ · MH</div>
+      </div>
+      <div class="q-tile" data-accent="sky" onclick="switchTab('wellness',null)">
+        <span class="q-tile-badge t-plus">PLUS</span>
+        <div class="q-tile-icon" style="background:rgba(94,155,181,.15);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--sky2)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+        <div class="q-tile-name" id="qt-well">Wellness</div>
+        <div class="q-tile-sub" id="qt-well-sub">Mood · Habits</div>
+      </div>
+      <div class="q-tile" data-accent="lav" onclick="switchTab('explore',null)">
+        <span class="q-tile-badge t-core">CORE</span>
+        <div class="q-tile-icon" style="background:rgba(140,135,194,.15);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--lav2)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+        <div class="q-tile-name" id="qt-exp">Explore</div>
+        <div class="q-tile-sub" id="qt-exp-sub">World · Culture</div>
+      </div>
+      <div class="q-tile" data-accent="clay" onclick="switchTab('tools',null)">
+        <span class="q-tile-badge t-pro">PRO</span>
+        <div class="q-tile-icon" style="background:rgba(184,115,85,.15);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--clay2)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+        <div class="q-tile-name" id="qt-tools">Tools & AI</div>
+        <div class="q-tile-sub" id="qt-tools-sub">Smart features</div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-hdr" onclick="togglePanel('mood-home','mood-home-body')">
+        <div class="panel-hdr-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg><span id="lbl-morning-mood">Morning Mood</span></div>
+        <svg class="panel-chev" id="chev-mood-home" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
+      </div>
+      <div class="panel-body hidden" id="mood-home-body">
+        <div class="mood-grid">
+          <div class="mood-btn" onclick="pickMood(0,this)"><span class="mi">😞</span><span class="ml">Low</span></div>
+          <div class="mood-btn" onclick="pickMood(1,this)"><span class="mi">😔</span><span class="ml">Okay</span></div>
+          <div class="mood-btn" onclick="pickMood(2,this)"><span class="mi">😐</span><span class="ml">Neutral</span></div>
+          <div class="mood-btn" onclick="pickMood(3,this)"><span class="mi">🙂</span><span class="ml">Good</span></div>
+          <div class="mood-btn" onclick="pickMood(4,this)"><span class="mi">😄</span><span class="ml">Great</span></div>
+        </div>
+        <div class="mood-feedback" id="mood-fb" style="margin-top:9px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ AFFIRMATIONS ════ -->
+  <div class="section" id="affirmations">
+    <div class="flip-wrap" onclick="flipCard()">
+      <div class="flip-inner" id="flip-inner">
+        <div class="flip-face">
+          <div class="flip-domain" id="cd-domain" style="color:var(--sky)">Adaptive Intelligence · AQ</div>
+          <div class="flip-quote" id="cd-aff">"I adapt with grace to whatever the day brings forth."</div>
+          <div class="flip-hint" id="flip-tap-hint">tap to reveal reflection →</div>
+          <button class="fav-btn" id="fav-btn" onclick="event.stopPropagation();toggleFav()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+        </div>
+        <div class="flip-face flip-back">
+          <div class="flip-domain" id="cd-domain-b" style="color:var(--sky)">Morning Reflection</div>
+          <div class="flip-ref" id="cd-ref">"When we can no longer change a situation, we are challenged to change ourselves." — Frankl</div>
+          <div class="flip-practice" id="cd-hint">Sit quietly for one minute. Notice any resistance.</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-dots" id="card-dots"></div>
+    <div class="ctrl-row">
+      <button class="ctrl-btn" onclick="prevCard()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <button class="ctrl-main" id="btn-next" onclick="nextCard()">Next Affirmation</button>
+      <button class="ctrl-btn" onclick="shuffleCards()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg></button>
+    </div>
+    <div class="panel">
+      <div class="panel-hdr" onclick="togglePanel('breath-p','breath-body')">
+        <div class="panel-hdr-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.364 5.636a9 9 0 0 1 0 12.728M15.536 8.464a5 5 0 0 1 0 7.072M12 12h.01"/></svg><span id="lbl-breath">Breathwork</span></div>
+        <svg class="panel-chev" id="chev-breath-p" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
+      </div>
+      <div class="panel-body hidden" id="breath-body">
+        <div class="breath-wrap">
+          <div class="breath-ring-outer"><div class="breath-ring-track" id="b-ring"></div><div class="breath-ring-core"><div class="b-lbl" id="b-lbl">Ready</div><div class="b-sub" id="b-sub">4·4·4·4</div></div></div>
+          <div class="breath-cycles" id="b-cycles"></div>
+          <div class="breath-btns"><button class="btn btn-primary" onclick="startBreath()" id="btn-begin">Begin</button><button class="btn" onclick="stopBreath()" id="btn-stop">Stop</button></div>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-hdr" onclick="togglePanel('jrnl-p','jrnl-body')">
+        <div class="panel-hdr-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg><span id="lbl-journal">Morning Journal</span></div>
+        <svg class="panel-chev" id="chev-jrnl-p" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
+      </div>
+      <div class="panel-body hidden" id="jrnl-body">
+        <div class="journal-prompt-box"><p id="jPrompt">"What is one small act of courage I can commit to today?"</p></div>
+        <textarea class="journal-area" id="jArea" placeholder="Write freely…" oninput="updateWC()"></textarea>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px;"><span style="font-size:9px;color:var(--fg3);" id="wc">0 words</span><button class="btn" style="height:24px;font-size:9px;padding:0 9px;" onclick="copyJournal()" id="btn-copy">Copy</button></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-hdr" onclick="togglePanel('chart-p','chart-body')">
+        <div class="panel-hdr-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span id="lbl-weekly">Weekly Wellbeing</span></div>
+        <svg class="panel-chev" id="chev-chart-p" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
+      </div>
+      <div class="panel-body hidden" id="chart-body">
+        <div class="chart-wrap"><canvas id="moodChart"></canvas></div>
+        <div class="chart-legend"><div class="cl-item"><div class="cl-pip" style="background:var(--mint)"></div>Mood</div><div class="cl-item"><div class="cl-pip" style="background:var(--lavender)"></div>EQ</div><div class="cl-item"><div class="cl-pip" style="background:var(--gold)"></div>Energy</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ WELLNESS ════ -->
+  <div class="section" id="wellness">
+    <div class="card"><div class="score-hero"><div class="score-ring"><canvas id="scoreRing" width="60" height="60"></canvas><div class="score-num">78</div></div><div><div class="score-title" id="lbl-wscore">Wellbeing Score</div><div class="score-sub" id="lbl-wscore-sub">Above weekly average · Keep growing</div></div></div></div>
+    <div class="iq-strip">
+      <div class="iq-box"><div class="iq-label">EQ</div><div class="iq-val" style="color:var(--lavender)">82</div></div>
+      <div class="iq-box"><div class="iq-label">AQ</div><div class="iq-val" style="color:var(--sky)">76</div></div>
+      <div class="iq-box"><div class="iq-label">SQ</div><div class="iq-val" style="color:var(--mint)">79</div></div>
+      <div class="iq-box"><div class="iq-label">MH</div><div class="iq-val" style="color:var(--blush)">74</div></div>
+    </div>
+    <div class="track-grid">
+      <div class="track-tile"><div class="tt-icon" style="background:rgba(107,144,112,.15);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--mint)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><div class="tt-name" id="tt-mood">Mood Tracker</div><div class="tt-sub">Pixel · daily log</div><div class="tt-val" style="color:var(--mint)">4.2/5</div><div class="tt-bar"><div class="tt-fill" style="width:84%;background:var(--mint)"></div></div></div>
+      <div class="track-tile"><div class="tt-icon" style="background:rgba(140,135,194,.15);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--lav2)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div><div class="tt-name">ADHD Tracker</div><div class="tt-sub">Focus + habits</div><div class="tt-val" style="color:var(--lav2)">6/8</div><div class="tt-bar"><div class="tt-fill" style="width:75%;background:var(--lav2)"></div></div></div>
+      <div class="track-tile"><div class="tt-icon" style="background:rgba(196,120,120,.15);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blush2)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg></div><div class="tt-name" id="tt-cal">Calorie Chart</div><div class="tt-sub">Today's intake</div><div class="tt-val" style="color:var(--blush2)">1,420</div><div class="tt-bar"><div class="tt-fill" style="width:60%;background:var(--blush2)"></div></div></div>
+      <div class="track-tile"><div class="tt-icon" style="background:rgba(201,168,76,.15);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--gold2)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div class="tt-name" id="tt-exp">Expenses</div><div class="tt-sub">This month</div><div class="tt-val" style="color:var(--gold2)">€342</div><div class="tt-bar"><div class="tt-fill" style="width:45%;background:var(--gold2)"></div></div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-hdr" onclick="togglePanel('stress-p','stress-body')"><div class="panel-hdr-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span id="lbl-stress">Stress Tracker</span></div><svg class="panel-chev" id="chev-stress-p" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg></div>
+      <div class="panel-body hidden" id="stress-body"><p style="font-size:10px;color:var(--fg3);margin-bottom:9px;" id="stress-instr">Rate your stress level right now (1 calm · 5 overwhelmed)</p><div class="stress-row" id="stress-btns"><button class="stress-btn" onclick="setStress(1,this)">1</button><button class="stress-btn" onclick="setStress(2,this)">2</button><button class="stress-btn" onclick="setStress(3,this)">3</button><button class="stress-btn" onclick="setStress(4,this)">4</button><button class="stress-btn" onclick="setStress(5,this)">5</button></div><div id="stress-fb" style="font-size:10px;color:var(--fg3);text-align:center;margin-top:8px;font-style:italic;font-family:'Fraunces',serif;"></div></div>
+    </div>
+  </div>
+
+  <!-- ════ EXPLORE ════ -->
+  <div class="section" id="explore">
+    <div class="explore-hero-card"><div><div class="explore-title" id="exp-title">Discover the World</div><div class="explore-sub" id="exp-sub">Places · Festivals · Cuisine · Community</div></div></div>
+    <div class="disc-grid">
+      <div class="disc-card"><div class="disc-glyph">🗺️</div><div class="disc-name" id="disc-places">Incredible Places</div><div class="disc-sub" id="disc-places-sub">Hidden gems worldwide</div></div>
+      <div class="disc-card"><div class="disc-glyph">🎭</div><div class="disc-name" id="disc-fest">Global Festivals</div><div class="disc-sub">Culture & celebration</div></div>
+      <div class="disc-card"><div class="disc-glyph">🍽️</div><div class="disc-name" id="disc-food">World Cuisine</div><div class="disc-sub" id="disc-food-sub">Sabores del mundo</div></div>
+      <div class="disc-card"><div class="disc-glyph">🎨</div><div class="disc-name">Art Stitch</div><div class="disc-sub" id="disc-art-sub">Artist globalisation</div></div>
+      <div class="disc-card"><div class="disc-glyph">🤝</div><div class="disc-name" id="disc-comm">Community</div><div class="disc-sub" id="disc-comm-sub">People around the world</div></div>
+      <div class="disc-card"><div class="disc-glyph">📅</div><div class="disc-name" id="disc-events">Events</div><div class="disc-sub" id="disc-events-sub">Conferences & meetups</div></div>
+    </div>
+    <div class="card" style="background:linear-gradient(135deg,#fffbf0 0%,#fff8e6 100%);border-color:rgba(201,168,76,.25);"><div style="font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;">Featured · Indian Vibes</div><div style="font-family:'Fraunces',serif;font-size:13px;font-style:italic;font-weight:300;color:var(--forest);margin-bottom:4px;" id="iv-title">Country-wise Perspectives</div><div style="font-size:9px;color:var(--fg3);line-height:1.6;" id="iv-sub">Explore traditions, philosophy, and lifestyle wisdom from the subcontinent and beyond.</div></div>
+  </div>
+
+  <!-- ════ TOOLS ════ -->
+  <div class="section" id="tools">
+    <div class="sec-hdr-lbl" id="tools-prod-hdr">Productivity</div>
+    <div class="tool-list">
+      <div class="tool-row"><div class="tool-ico" style="background:rgba(201,168,76,.12);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--gold2)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div><div class="tool-info"><div class="tool-name" id="tool-todo">To-Do & Projects</div><div class="tool-desc" id="tool-todo-sub">Weekly planner · Meetings</div></div><span class="tool-badge t-core">CORE</span></div>
+      <div class="tool-row"><div class="tool-ico" style="background:rgba(107,144,112,.12);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--mint)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><div class="tool-info"><div class="tool-name" id="tool-ai">AI Responsive</div><div class="tool-desc" id="tool-ai-sub">Smart assistant · Analytics</div></div><span class="tool-badge t-plus">PLUS</span></div>
+      <div class="tool-row"><div class="tool-ico" style="background:rgba(140,135,194,.12);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--lav2)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg></div><div class="tool-info"><div class="tool-name" id="tool-audio">Audio to Text</div><div class="tool-desc">Voice notes · Transcription</div></div><span class="tool-badge t-pro">PRO</span></div>
+      <div class="tool-row"><div class="tool-ico" style="background:rgba(94,155,181,.12);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--sky2)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div><div class="tool-info"><div class="tool-name" id="tool-view">Full View & Widgets</div><div class="tool-desc">Customisable displays</div></div><span class="tool-badge t-plus">PLUS</span></div>
+      <div class="tool-row"><div class="tool-ico" style="background:rgba(107,144,112,.12);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--mint)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><div class="tool-info"><div class="tool-name" id="tool-offline">Offline + Encrypted</div><div class="tool-desc">GDPR ready · Privacy control</div></div><span class="tool-badge t-pro">PRO</span></div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <div class="bn-item on" onclick="switchTab('home',null);setBottomNav(this)">
+      <div class="bn-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+             style="stroke:#c9a84c;">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+      </div>
+      <div class="bn-label" id="bn-home" style="color:#c9a84c;">Home</div>
+    </div>
+    <div class="bn-item" onclick="switchTab('affirmations',null);setBottomNav(this)">
+      <div class="bn-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+             style="stroke:#c47878;">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+      </div>
+      <div class="bn-label" id="bn-aff" style="color:#c47878;">Affirm</div>
+    </div>
+    <div class="bn-item" onclick="switchTab('wellness',null);setBottomNav(this)">
+      <div class="bn-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+             style="stroke:#6b9070;">
+          <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+        </svg>
+      </div>
+      <div class="bn-label" id="bn-well" style="color:#6b9070;">Wellness</div>
+    </div>
+    <div class="bn-item" onclick="switchTab('explore',null);setBottomNav(this)">
+      <div class="bn-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+             style="stroke:#5e9bb5;">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="2" y1="12" x2="22" y2="12"/>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+        </svg>
+      </div>
+      <div class="bn-label" id="bn-exp" style="color:#5e9bb5;">Explore</div>
+    </div>
+    <!-- MENU button -->
+    <div class="bn-item menu-btn" onclick="openMenu();setBottomNav(this)">
+      <div class="bn-icon" style="display:flex;flex-direction:column;gap:3px;align-items:center;justify-content:center;">
+        <div class="bn-menu-lines">
+          <span style="background:#8c87c2;"></span>
+          <span style="background:#8c87c2;"></span>
+          <span style="background:#8c87c2;"></span>
+        </div>
+      </div>
+      <div class="bn-label" id="bn-menu" style="color:#8c87c2;">Menu</div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <!-- ══════════════════════════════
+       UNIQLO-STYLE MENU OVERLAY
+  ══════════════════════════════ -->
+  <div class="uniqlo-overlay" id="uniqloMenu">
+
+    <div class="uniqlo-top">
+      <div class="uniqlo-top-title">Menu</div>
+      <button class="uniqlo-close" onclick="closeMenu()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <!-- Four primary menu tabs -->
+    <div class="uniqlo-tabs">
+      <div class="uq-tab on" id="uqt-social" onclick="switchUQTab('social',this)" data-label="Social">Social</div>
+      <div class="uq-tab" id="uqt-addons" onclick="switchUQTab('addons',this)" data-label="Add-ons">Add-ons</div>
+      <div class="uq-tab" id="uqt-productivity" onclick="switchUQTab('productivity',this)" data-label="Productivity">Productivity</div>
+      <div class="uq-tab" id="uqt-features" onclick="switchUQTab('features',this)" data-label="Features">Features</div>
+    </div>
+
+    <div class="uniqlo-body">
+
+      <!-- SOCIAL TAB -->
+      <div class="uq-section vis" id="uq-social">
+        <!-- Family Sharing -->
+        <div class="uq-block">
+          <div class="uq-block-hdr" onclick="toggleUQBlock('uqb-sharing')">
+            <div class="uq-block-hdr-left">
+              <div class="uq-block-icon" style="background:rgba(107,144,112,.15);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--mint)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+              <div><div class="uq-block-name" id="uq-sharing">Family Sharing</div><div class="uq-block-desc" id="uq-sharing-sub">Connect with people you love</div></div>
+            </div>
+            <svg class="uq-block-chev" id="chev-uqb-sharing" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l4 4-4 4"/></svg>
+          </div>
+          <div class="uq-block-body open" id="uqb-sharing">
+            <div class="uq-feature-row"><div class="uq-feat-pip" style="background:var(--lav2)"></div><div><div class="uq-feat-name" id="uq-f-sharing">Sharing (Family)</div><div class="uq-feat-sub">Active + inactive users</div></div><span class="uq-feat-badge t-pro">PRO</span></div>
+            <div class="uq-feature-row"><div class="uq-feat-pip" style="background:var(--lav2)"></div><div><div class="uq-feat-name">Multi-language</div><div class="uq-feat-sub">EN + ES · multizone</div></div><span class="uq-feat-badge t-pro">PRO</span></div>
+            <div class="uq-feature-row"><div class="uq-feat-pip" style="background:var(--gold)"></div><div><div class="uq-feat-name">Map View</div></div><span class="uq-feat-badge t-core">CORE</span></div>
+          </div>
+        </div>
+        <!-- View & Display -->
+        <div class="uq-block">
+          <div class="uq-block-hdr" onclick="toggleUQBlock('uqb-view')">
+            <div class="uq-block-hdr-left">
+              <div class="uq-block-icon" style="background:rgba(94,155,181,.15);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--sky2)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+              </div>
+              <div><div class="uq-block-name" id="uq-view">View & Display</div><div class="uq-block-desc" id="uq-view-sub">Customise how you see Eunoia</div></div>
+            </div>
+            <svg class="uq-block-chev" id="chev-uqb-view" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l4 4-4 4"/></svg>
+          </div>
+          <div class="uq-block-body" id="uqb-view">
+            <div class="uq-feature-row"><div class="uq-feat-pip" style="background:var(--sky)"></div><div><div class="uq-feat-name">Full View Mode</div></div><span class="uq-feat-badge t-plus">PLUS</span></div>
+            <div class="uq-feature-row"><div class="uq-feat-pip" style="background:var(--sky)"></div><div><div class="uq-feat-name">Widgets View</div></div><span class="uq-feat-badge t-plus">PLUS</span></div>
+            <div class="uq-feature-row"><div class="uq-feat-pip" style="background:var(--lav2)"></div><div><div class="uq-feat-name">Advanced Filter</div><div class="uq-feat-sub">Date · location · tag · favourites</div></div><span class="uq-feat-badge t-pro">PRO</span></div>
+            <div class="uq-feature-row"><div class="uq-feat-pip" style="background:var(--lav2)"></div><div><div class="uq-feat-name">Customised Settings</div></div><span class="uq-feat-badge t-pro">PRO</span></div>
+            <div class="uq-feature-row"><div class="uq-feat-pip" style="background:var(--lav2)"></div><div><div class="uq-feat-name">Tagging & Categorisation</div><div class="uq-feat-sub">Platform-wide categories</div></div><span class="uq-feat-badge t-pro">PRO</span></div>
+          </div>
+        </div>
+        <!-- Connected People -->
+        <div class="uq-block">
+          <div class="uq-block-hdr" onclick="toggleUQBlock('uqb-people')">
+            <div class="uq-block-hdr-left">
+              <div class="uq-block-icon" style="background:rgba(196,120,120,.15);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--blush2)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+              </div>
+              <div><div class="uq-block-name">Connected People</div><div class="uq-block-desc">Your circle of support</div></div>
+            </div>
+            <svg class="uq-block-chev" id="chev-uqb-people" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l4 4-4 4"/></svg>
+          </div>
+          <div class="uq-block-body" id="uqb-people">
+            <div class="uq-feature-row" style="align-items:center;">
+              <div style="width:32px;height:32px;border-radius:50%;background:rgba(107,144,112,.2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--mint);flex-shrink:0;">AM</div>
+              <div style="flex:1;padding-left:4px;"><div class="uq-feat-name">Anna M.</div><div class="uq-feat-sub">Sister · Active</div></div>
+              <button class="btn-xs active">Following</button>
+            </div>
+            <div class="uq-feature-row" style="align-items:center;">
+              <div style="width:32px;height:32px;border-radius:50%;background:rgba(140,135,194,.2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--lav2);flex-shrink:0;">JK</div>
+              <div style="flex:1;padding-left:4px;"><div class="uq-feat-name">Jean K.</div><div class="uq-feat-sub">Partner · Active</div></div>
+              <button class="btn-xs active">Following</button>
+            </div>
+          </div>
+        </div>
+      </div><!-- /uq-social -->
+
+      <!-- ADD-ONS TAB -->
+      <div class="uq-section" id="uq-addons">
+        <div class="uq-block">
+          <div class="uq-block-hdr" onclick="toggleUQBlock('uqb-gratitude')">
+            <div class="uq-block-hdr-left">
+              <div class="uq-block-icon" style="background:rgba(201,168,76,.15);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold2)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              </div>
+              <div><div class="uq-block-name" style="color:var(--gold2)">Gratitude Log</div><div class="uq-block-desc">3 things each morning</div></div>
+            </div>
+            <svg class="uq-block-chev open" id="chev-uqb-gratitude" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l4 4-4 4"/></svg>
+          </div>
+          <div class="uq-block-body open" id="uqb-gratitude">
+            <div class="uq-feature-row"><div class="uq-feat-pip" style="background:var(--clay)"></div><div><div class="uq-feat-name">Daily Gratitude Entry</div><div class="uq-feat-sub">Morning ritual · Positive reference</div></div><span class="uq-feat-badge t-addon">ADD-ON</span></div>
+            <div class="uq-feature-row" style="align-items:center;"><div class="uq-feat-pip" style="background:var(--clay)"></div><div style="flex:1;"><div class="uq-feat-name">Enable Gratitude Log</div></div><div class="toggle-sw on" onclick="this.classList.toggle('on')"></div></div>
+          </div>
+        </div>
+        <div class="uq-block">
+          <div class="uq-block-hdr" onclick="toggleUQBlock('uqb-habit')">
+            <div class="uq-block-hdr-left">
+              <div class="uq-block-icon" style="background:rgba(140,135,194,.15);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--lav2)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              </div>
+              <div><div class="uq-block-name" style="color:var(--lav2)">Habit Chain Visualiser</div><div class="uq-block-desc">See your habits connected</div></div>
+            </div>
+            <svg class="uq-block-chev" id="chev-uqb-habit" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l4 4-4 4"/></svg>
+          </div>
+          <div class="uq-block-body" id="uqb-habit">
+            <div class="uq-feature-row"><div class="uq-feat-pip" style="background:var(--clay)"></div><div><div class="uq-feat-name">Chain Visualisation</div><div class="uq-feat-sub">Daily ritual architecture</div></div><span class="uq-feat-badge t-addon">ADD-ON</span></div>
+            <div class="uq-feature-row" style="align-items:center;"><div class="uq-feat-pip" style="background:var(--clay)"></div><div style="flex:1;"><div class="uq-feat-name">Enable Habit Chain</div></div><div class="toggle-sw" onclick="this.classList.toggle('on')"></div></div>
+          </div>
+        </div>
+        <div class="uq-block">
+          <div class="uq-block-hdr" onclick="toggleUQBlock('uqb-wbdash')">
+            <div class="uq-block-hdr-left">
+              <div class="uq-block-icon" style="background:rgba(107,144,112,.15);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--mint)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+              </div>
+              <div><div class="uq-block-name" style="color:var(--mint)">Wellbeing Dashboard</div><div class="uq-block-desc">Holistic daily intelligence</div></div>
+            </div>
+            <svg class="uq-block-chev" id="chev-uqb-wbdash" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l4 4-4 4"/></svg>
+          </div>
+          <div class="uq-block-body" id="uqb-wbdash">
+            <div class="uq-feature-row"><div class="uq-feat-pip" style="background:var(--clay)"></div><div><div class="uq-feat-name">Full Wellbeing View</div><div class="uq-feat-sub">Mood · Stress · Habits · Reflection</div></div><span class="uq-feat-badge t-addon">ADD-ON</span></div>
+            <div class="uq-feature-row" style="align-items:center;"><div class="uq-feat-pip" style="background:var(--clay)"></div><div style="flex:1;"><div class="uq-feat-name">Enable Dashboard</div></div><div class="toggle-sw on" onclick="this.classList.toggle('on')"></div></div>
+          </div>
+        </div>
+      </div><!-- /uq-addons -->
+
+      <!-- PRODUCTIVITY TAB -->
+      <div class="uq-section" id="uq-productivity">
+        <div class="uq-block">
+          <div class="uq-block-hdr" onclick="toggleUQBlock('uqb-tasks')">
+            <div class="uq-block-hdr-left">
+              <div class="uq-block-icon" style="background:rgba(201,168,76,.15);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold2)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+              </div>
+              <div><div class="uq-block-name">Tasks & Planning</div><div class="uq-block-desc">Your daily organisation hub</div></div>
+            </div>
+            <svg class="uq-block-chev open" id="chev-uqb-tasks" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l4 4-4 4"/></svg>
+          </div>
+          <div class="uq-block-body open" id="uqb-tasks">
+            <div class="uq-feature-row"><div class="uq-feat-pip" style="background:var(--gold)"></div><div><div class="uq-feat-name">To-Do List</div></div><span class="uq-feat-badge t-core">CORE</span></div>
+            <div class="uq-feature-row"><div class="uq-feat-pip" style="background:var(--gold)"></div><div><div class="uq-feat-name">Projects</div></div><span class="uq-feat-badge t-core">CORE</span></div>
+            <div class="uq-feature-row"><div class="uq-feat-pip" style="background:var(--gold)"></div><div><div class="uq-feat-name">Weekly Planner</div></div><span class="uq-feat-badge t-core">CORE</span></div>
+            <div class="uq-feature-row"><div class="uq-feat-pip" style="background:var(--gold)"></div><div><div class="uq-feat-name">Meetings</div></div><span class="uq-feat-badge t-core">CORE</span></div>
+            <div class="uq-feature-row"><div class="uq-feat-pip" style="background:var(--sky)"></div><div><div class="uq-feat-name">Reminders</div><div class="uq-feat-sub">Memory time capsule</div></div><span class="uq-feat-badge t-plus">PLUS</span></div>
+          </div>
+        </div>
+        <div class="uq-block">
+          <div class="uq-block-hdr" onclick="toggleUQBlock('uqb-personal')">
+            <div class="uq-block-hdr-left">
+              <div class="uq-block-icon" style="background:rgba(94,155,181,.15);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--sky2)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+              </div>
+              <div><div class="uq-block-name">Personal Organisation</div><div class="uq-block-desc">Your life, beautifully ordered</div></div>
+            </div>
+            <svg class="uq-block-chev" id="chev-uqb-personal" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l4 4-4 4"/></svg>
+          </div>
+          <div class="uq-block-body" id="uqb-personal">
+            <div class="uq-feature-row"><div class="uq-feat-pip" style="background:var(--gold)"></div><div><div class="uq-feat-name">My Trips</div></div><span class="uq-feat-badge t-core">CORE</span></div>
+            <div class="uq-feature-row"><div class="uq-feat-pip" style="background:var(--gold)"></div><div><div class="uq-feat-name">Inspiration</div></div><span class="uq-feat-badge t-core">CORE</span></div>
+            <div class="uq-feature-row"><div class="uq-feat-pip" style="background:var(--gold)"></div><div><div class="uq-feat-name">Bookmarks</div></div><span class="uq-feat-badge t-core">CORE</span></div>
+            <div class="uq-feature-row"><div class="uq-feat-pip" style="background:var(--sky)"></div><div><div class="uq-feat-name">Personal Goods</div><div class="uq-feat-sub">Picture + location + treasure</div></div><span class="uq-feat-badge t-plus">PLUS</span></div>
+            <div class="uq-feature-row"><div class="uq-feat-pip" style="background:var(--sky)"></div><div><div class="uq-feat-name">Daily Intention</div><div class="uq-feat-sub">Gratitude · Focus · Water</div></div><span class="uq-feat-badge t-plus">PLUS</span></div>
+            <div class="uq-feature-row"><div class="uq-feat-pip" style="background:var(--sky)"></div><div><div class="uq-feat-name">Achievements</div></div><span class="uq-feat-badge t-plus">PLUS</span></div>
+          </div>
+        </div>
+        <div class="uq-block">
+          <div class="uq-block-hdr" onclick="toggleUQBlock('uqb-entertain')">
+            <div class="uq-block-hdr-left">
+              <div class="uq-block-icon" style="background:rgba(122,170,128,.15);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--mint)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+              </div>
+              <div><div class="uq-block-name">Entertainment</div><div class="uq-block-desc">Puzzles · Plants · Greetings</div></div>
+            </div>
+            <svg class="uq-block-chev" id="chev-uqb-entertain" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l4 4-4 4"/></svg>
+          </div>
+          <div class="uq-block-body" id="uqb-entertain">
+            <div class="uq-feature-row"><div class="uq-feat-pip" style="background:var(--gold)"></div><div><div class="uq-feat-name">Puzzle</div><div class="uq-feat-sub">Frame · Words · Picture · Number</div></div><span class="uq-feat-badge t-core">CORE</span></div>
+            <div class="uq-feature-row"><div class="uq-feat-pip" style="background:var(--gold)"></div><div><div class="uq-feat-name">Plants — Seeds to Flowers</div></div><span class="uq-feat-badge t-core">CORE</span></div>
+            <div class="uq-feature-row"><div class="uq-feat-pip" style="background:var(--sky)"></div><div><div class="uq-feat-name">Greetings Card</div></div><span class="uq-feat-badge t-plus">PLUS</span></div>
+          </div>
+        </div>
+      </div><!-- /uq-productivity -->
+
+      <!-- FEATURES TAB (formerly right sidebar) -->
+      <div class="uq-section" id="uq-features">
+        <!-- Tier filter pills -->
+        <div class="menu-tier-filter">
+          <div class="menu-tier-pill active" onclick="filterMenuTier('all',this)"><div class="menu-tier-dot" style="background:var(--sage)"></div>All</div>
+          <div class="menu-tier-pill" onclick="filterMenuTier('core',this)"><div class="menu-tier-dot" style="background:var(--gold)"></div>Core</div>
+          <div class="menu-tier-pill" onclick="filterMenuTier('plus',this)"><div class="menu-tier-dot" style="background:var(--sky)"></div>Plus</div>
+          <div class="menu-tier-pill" onclick="filterMenuTier('pro',this)"><div class="menu-tier-dot" style="background:var(--lavender)"></div>Pro</div>
+          <div class="menu-tier-pill" onclick="filterMenuTier('addon',this)"><div class="menu-tier-dot" style="background:var(--clay)"></div>Add-on</div>
+        </div>
+        <!-- Feature groups -->
+        <div class="sb-features" id="menu-sb-features" style="padding:0;">
+          <!-- Productivity -->
+          <div class="sb-feat-group">
+            <div class="sb-feat-grp-hdr" onclick="toggleSBGroup('msbg1')">
+              <div class="sb-feat-grp-left">
+                <div class="sb-feat-grp-icon" style="background:rgba(201,168,76,.12);color:var(--gold);">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                </div>
+                <div class="sb-feat-grp-name">Productivity</div>
+              </div>
+              <svg class="sb-feat-grp-chev open" id="chev-msbg1" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
+            </div>
+            <div class="sb-feat-list open" id="msbg1">
+              <div class="sb-feat-item" data-tier="core"><div class="sf-dot" style="background:var(--gold)"></div><div class="sf-body"><div class="sf-name">To-Do List</div></div><span class="sf-tier t-core">CORE</span></div>
+              <div class="sb-feat-item" data-tier="core"><div class="sf-dot" style="background:var(--gold)"></div><div class="sf-body"><div class="sf-name">Projects</div></div><span class="sf-tier t-core">CORE</span></div>
+              <div class="sb-feat-item" data-tier="core"><div class="sf-dot" style="background:var(--gold)"></div><div class="sf-body"><div class="sf-name">Weekly Planner</div></div><span class="sf-tier t-core">CORE</span></div>
+              <div class="sb-feat-item" data-tier="core"><div class="sf-dot" style="background:var(--gold)"></div><div class="sf-body"><div class="sf-name">Meetings</div></div><span class="sf-tier t-core">CORE</span></div>
+              <div class="sb-feat-item" data-tier="plus"><div class="sf-dot" style="background:var(--sky)"></div><div class="sf-body"><div class="sf-name">Reminders</div><div class="sf-sub">Memory time capsule</div></div><span class="sf-tier t-plus">PLUS</span></div>
+              <div class="sb-feat-item" data-tier="plus"><div class="sf-dot" style="background:var(--sky)"></div><div class="sf-body"><div class="sf-name">Daily Intention</div><div class="sf-sub">Gratitude · Focus · Water</div></div><span class="sf-tier t-plus">PLUS</span></div>
+              <div class="sb-feat-item" data-tier="plus"><div class="sf-dot" style="background:var(--sky)"></div><div class="sf-body"><div class="sf-name">Achievements</div></div><span class="sf-tier t-plus">PLUS</span></div>
+              <div class="sb-feat-item" data-tier="core"><div class="sf-dot" style="background:var(--gold)"></div><div class="sf-body"><div class="sf-name">My Trips</div></div><span class="sf-tier t-core">CORE</span></div>
+              <div class="sb-feat-item" data-tier="core"><div class="sf-dot" style="background:var(--gold)"></div><div class="sf-body"><div class="sf-name">Inspiration</div></div><span class="sf-tier t-core">CORE</span></div>
+              <div class="sb-feat-item" data-tier="core"><div class="sf-dot" style="background:var(--gold)"></div><div class="sf-body"><div class="sf-name">Bookmarks</div></div><span class="sf-tier t-core">CORE</span></div>
+              <div class="sb-feat-item" data-tier="plus"><div class="sf-dot" style="background:var(--sky)"></div><div class="sf-body"><div class="sf-name">Personal Goods</div><div class="sf-sub">Picture + location</div></div><span class="sf-tier t-plus">PLUS</span></div>
+            </div>
+          </div>
+          <!-- Wellness -->
+          <div class="sb-feat-group">
+            <div class="sb-feat-grp-hdr" onclick="toggleSBGroup('msbg2')">
+              <div class="sb-feat-grp-left">
+                <div class="sb-feat-grp-icon" style="background:rgba(107,144,112,.15);color:var(--sage);">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                </div>
+                <div class="sb-feat-grp-name">Wellness</div>
+              </div>
+              <svg class="sb-feat-grp-chev" id="chev-msbg2" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
+            </div>
+            <div class="sb-feat-list" id="msbg2">
+              <div class="sb-feat-item" data-tier="plus"><div class="sf-dot" style="background:var(--sky)"></div><div class="sf-body"><div class="sf-name">Pixel — Mood Tracker</div></div><span class="sf-tier t-plus">PLUS</span></div>
+              <div class="sb-feat-item" data-tier="plus"><div class="sf-dot" style="background:var(--sky)"></div><div class="sf-body"><div class="sf-name">Stress Tracker</div></div><span class="sf-tier t-plus">PLUS</span></div>
+              <div class="sb-feat-item" data-tier="plus"><div class="sf-dot" style="background:var(--sky)"></div><div class="sf-body"><div class="sf-name">Calorie Chart</div></div><span class="sf-tier t-plus">PLUS</span></div>
+              <div class="sb-feat-item" data-tier="plus"><div class="sf-dot" style="background:var(--sky)"></div><div class="sf-body"><div class="sf-name">Expenses Tracker</div></div><span class="sf-tier t-plus">PLUS</span></div>
+              <div class="sb-feat-item" data-tier="pro"><div class="sf-dot" style="background:var(--lavender)"></div><div class="sf-body"><div class="sf-name">Mental Health Calc.</div><div class="sf-sub">IQ · EQ · SQ · AQ</div></div><span class="sf-tier t-pro">PRO</span></div>
+              <div class="sb-feat-item" data-tier="pro"><div class="sf-dot" style="background:var(--lavender)"></div><div class="sf-body"><div class="sf-name">ADHD + Habit Tracker</div></div><span class="sf-tier t-pro">PRO</span></div>
+              <div class="sb-feat-item" data-tier="addon"><div class="sf-dot" style="background:var(--clay)"></div><div class="sf-body"><div class="sf-name">Habit Chain Visualiser</div></div><span class="sf-tier t-addon">ADD-ON</span></div>
+              <div class="sb-feat-item" data-tier="addon"><div class="sf-dot" style="background:var(--clay)"></div><div class="sf-body"><div class="sf-name">Gratitude Log</div></div><span class="sf-tier t-addon">ADD-ON</span></div>
+              <div class="sb-feat-item" data-tier="addon"><div class="sf-dot" style="background:var(--clay)"></div><div class="sf-body"><div class="sf-name">Wellbeing Dashboard</div></div><span class="sf-tier t-addon">ADD-ON</span></div>
+            </div>
+          </div>
+          <!-- Explore -->
+          <div class="sb-feat-group">
+            <div class="sb-feat-grp-hdr" onclick="toggleSBGroup('msbg3')">
+              <div class="sb-feat-grp-left">
+                <div class="sb-feat-grp-icon" style="background:rgba(94,155,181,.12);color:var(--sky);">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                </div>
+                <div class="sb-feat-grp-name">Explore</div>
+              </div>
+              <svg class="sb-feat-grp-chev" id="chev-msbg3" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
+            </div>
+            <div class="sb-feat-list" id="msbg3">
+              <div class="sb-feat-item" data-tier="core"><div class="sf-dot" style="background:var(--gold)"></div><div class="sf-body"><div class="sf-name">Incredible Places</div></div><span class="sf-tier t-core">CORE</span></div>
+              <div class="sb-feat-item" data-tier="core"><div class="sf-dot" style="background:var(--gold)"></div><div class="sf-body"><div class="sf-name">Indian Vibes</div><div class="sf-sub">Country-wise</div></div><span class="sf-tier t-core">CORE</span></div>
+              <div class="sb-feat-item" data-tier="core"><div class="sf-dot" style="background:var(--gold)"></div><div class="sf-body"><div class="sf-name">Community</div></div><span class="sf-tier t-core">CORE</span></div>
+              <div class="sb-feat-item" data-tier="core"><div class="sf-dot" style="background:var(--gold)"></div><div class="sf-body"><div class="sf-name">Conference & Events</div></div><span class="sf-tier t-core">CORE</span></div>
+              <div class="sb-feat-item" data-tier="plus"><div class="sf-dot" style="background:var(--sky)"></div><div class="sf-body"><div class="sf-name">Festivals Worldwide</div></div><span class="sf-tier t-plus">PLUS</span></div>
+              <div class="sb-feat-item" data-tier="plus"><div class="sf-dot" style="background:var(--sky)"></div><div class="sf-body"><div class="sf-name">Food Around World</div></div><span class="sf-tier t-plus">PLUS</span></div>
+              <div class="sb-feat-item" data-tier="pro"><div class="sf-dot" style="background:var(--lavender)"></div><div class="sf-body"><div class="sf-name">Art Stitch</div><div class="sf-sub">Artist globalisation</div></div><span class="sf-tier t-pro">PRO</span></div>
+            </div>
+          </div>
+          <!-- Tools & Social -->
+          <div class="sb-feat-group">
+            <div class="sb-feat-grp-hdr" onclick="toggleSBGroup('msbg4')">
+              <div class="sb-feat-grp-left">
+                <div class="sb-feat-grp-icon" style="background:rgba(140,135,194,.12);color:var(--lavender);">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                </div>
+                <div class="sb-feat-grp-name">Tools & Social</div>
+              </div>
+              <svg class="sb-feat-grp-chev" id="chev-msbg4" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
+            </div>
+            <div class="sb-feat-list" id="msbg4">
+              <div class="sb-feat-item" data-tier="core"><div class="sf-dot" style="background:var(--gold)"></div><div class="sf-body"><div class="sf-name">Puzzle</div><div class="sf-sub">Frame · words · picture</div></div><span class="sf-tier t-core">CORE</span></div>
+              <div class="sb-feat-item" data-tier="core"><div class="sf-dot" style="background:var(--gold)"></div><div class="sf-body"><div class="sf-name">Plants — Seeds to Flowers</div></div><span class="sf-tier t-core">CORE</span></div>
+              <div class="sb-feat-item" data-tier="plus"><div class="sf-dot" style="background:var(--sky)"></div><div class="sf-body"><div class="sf-name">AI Responsive</div></div><span class="sf-tier t-plus">PLUS</span></div>
+              <div class="sb-feat-item" data-tier="plus"><div class="sf-dot" style="background:var(--sky)"></div><div class="sf-body"><div class="sf-name">Analytics</div></div><span class="sf-tier t-plus">PLUS</span></div>
+              <div class="sb-feat-item" data-tier="plus"><div class="sf-dot" style="background:var(--sky)"></div><div class="sf-body"><div class="sf-name">Export PDF + Display</div></div><span class="sf-tier t-plus">PLUS</span></div>
+              <div class="sb-feat-item" data-tier="pro"><div class="sf-dot" style="background:var(--lavender)"></div><div class="sf-body"><div class="sf-name">Audio to Text</div></div><span class="sf-tier t-pro">PRO</span></div>
+              <div class="sb-feat-item" data-tier="pro"><div class="sf-dot" style="background:var(--lavender)"></div><div class="sf-body"><div class="sf-name">Offline + Encrypted</div></div><span class="sf-tier t-pro">PRO</span></div>
+              <div class="sb-feat-item" data-tier="pro"><div class="sf-dot" style="background:var(--lavender)"></div><div class="sf-body"><div class="sf-name">Family Sharing</div></div><span class="sf-tier t-pro">PRO</span></div>
+              <div class="sb-feat-item" data-tier="pro"><div class="sf-dot" style="background:var(--lavender)"></div><div class="sf-body"><div class="sf-name">Multi-language</div></div><span class="sf-tier t-pro">PRO</span></div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /uq-features -->
+
+    <!-- Sticky CTA + Footer Links -->
+    <div class="uniqlo-footer">
+      <div style="width:100%;">
+        <div style="display:flex;gap:8px;margin-bottom:10px;">
+          <button class="uq-cta uq-cta-primary" id="uq-cta-main" onclick="closeMenu()">Explore Features</button>
+          <button class="uq-cta uq-cta-outline" onclick="closeMenu()">Close</button>
+        </div>
+        <div class="menu-footer-links">
+          <span class="menu-footer-link" onclick="closeMenu();showToast('Usage Guide coming soon')">Usage Guide</span>
+          <span class="menu-footer-sep">·</span>
+          <span class="menu-footer-link" onclick="closeMenu();showToast('FAQs coming soon')">FAQs</span>
+          <span class="menu-footer-sep">·</span>
+          <span class="menu-footer-link" onclick="closeMenu();showToast('Terms of Use')">Terms of Use</span>
+          <span class="menu-footer-sep">·</span>
+          <span class="menu-footer-link" onclick="closeMenu();showToast('Privacy Policy')">Privacy Policy</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /uniqlo-overlay -->
+
+</div><!-- /phone-frame -->
+
+
+</div><!-- /phone-outer -->
+
+<script>
+/* ── DATA ── */
+const CARDS=[
+  {d:'aq',domain:'Adaptive Intelligence · AQ',aff:'"I adapt with grace to whatever the day brings forth."',ref:'"When we can no longer change a situation, we are challenged to change ourselves." — Frankl',hint:'Sit quietly for one minute. Notice any resistance.',color:'var(--sky)'},
+  {d:'eq',domain:'Emotional Intelligence · EQ',aff:'"I acknowledge my feelings without being ruled by them."',ref:'"The emotion that can break your heart is sometimes the very one that heals it." — Carroll',hint:'Place a hand on your heart. Breathe slowly.',color:'var(--lavender)'},
+  {d:'sq',domain:'Spiritual Intelligence · SQ',aff:'"I am connected to something greater than my individual self."',ref:'"The quieter you become, the more you can hear." — Ram Dass',hint:'Close your eyes. Feel your breath anchoring you here.',color:'var(--mint)'},
+  {d:'mh',domain:'Mental Wellbeing · MH',aff:'"I choose thoughts that nurture my peace and clarity."',ref:'"You don\'t have to control your thoughts. You just have to stop letting them control you." — Harris',hint:'Notice one thought. Let it pass like a cloud.',color:'var(--blush2)'},
+  {d:'eq',domain:'Emotional Intelligence · EQ',aff:'"I lead with compassion, beginning with compassion for myself."',ref:'"Self-compassion is giving the same kindness to ourselves we would give to others." — Neff',hint:'Write one kind thing you\'d say to a friend.',color:'var(--lavender)'},
+  {d:'aq',domain:'Adaptive Intelligence · AQ',aff:'"Every challenge I face deepens my capacity for resilience."',ref:'"Life doesn\'t get easier; we get stronger and more resilient." — Gibson',hint:'Recall a past challenge you overcame. Honour that strength.',color:'var(--sky)'},
+];
+const PROMPTS=['"What is one small act of courage I can commit to today?"','"What am I most grateful for in this present moment?"','"Where do I wish to grow in understanding and patience?"','"What would I do today if I knew I could not fail?"'];
+const MOOD_COLORS=['var(--fg3)','var(--blush)','var(--lavender)','var(--sky)','var(--mint)'];
+
+/* bilingual strings */
+const LANG={
+  EN:{
+    greet:['Good evening','Good morning','Good afternoon','Good evening'],
+    moodMsg:['Be gentle with yourself today.','Small steps matter. You\'re here.','A balanced day. Let it unfold.','Beautiful energy. Channel it.','Fantástico. Share that light.'],
+    stressMsg:['You\'re calm — a rare gift.','Mild tension. Breathe slowly.','Moderate stress. Pause a moment.','Elevated — try a short walk.','High stress. Please rest now.'],
+    lbl:{cards:'Cards',saved:'Saved',breaths:'Breaths',tasks:'Tasks',moodLabel:'Morning Mood',breathLabel:'Breathwork',journalLabel:'Morning Journal',weeklyLabel:'Weekly Wellbeing',stressLabel:'Stress Tracker',wscore:'Wellbeing Score',wscoreSub:'Above weekly average · Keep growing',stressInstr:'Rate your stress (1 calm · 5 overwhelmed)',affLabel:"Today's Affirmation",nextBtn:'Next Affirmation',copyBtn:'Copy',beginBtn:'Begin',stopBtn:'Stop',bnHome:'Home',bnAff:'Affirm',bnWell:'Wellness',bnExp:'Explore',bnMenu:'Menu',expTitle:'Discover the World',expSub:'Places · Festivals · Cuisine · Community',ivTitle:'Country-wise Perspectives',ivSub:'Explore traditions, philosophy, and lifestyle wisdom.',discPlaces:'Incredible Places',discPlacesSub:'Hidden gems worldwide',discFood:'World Cuisine',discFoodSub:'Sabores del mundo',discFest:'Global Festivals',discComm:'Community',discCommSub:'People around the world',discEvents:'Events',discEventsSub:'Conferences & meetups',discArtSub:'Artist globalisation',tapHint:'tap to reveal reflection →',toolsProd:'Productivity',toolTodo:'To-Do & Projects',toolTodoSub:'Weekly planner · Meetings',toolAI:'AI Responsive',toolAISub:'Smart assistant · Analytics',toolAudio:'Audio to Text',toolView:'Full View & Widgets',toolOffline:'Offline + Encrypted',ttMood:'Mood Tracker',ttCal:'Calorie Chart',ttExp:'Expenses',qtAff:'Affirmations',qtWell:'Wellness',qtWellSub:'Mood · Habits',qtExp:'Explore',qtExpSub:'World · Culture',qtTools:'Tools & AI',qtToolsSub:'Smart features',focus:'Focus',water:'Water',gratitude:'Gratitude',uqSharing:'Family Sharing',uqSharingSub:'Connect with people you love',uqView:'View & Display',uqViewSub:'Customise how you see Eunoia'},
+  },
+  ES:{
+    greet:['Buenas noches','Buenos días','Buenas tardes','Buenas noches'],
+    moodMsg:['Sé amable contigo hoy.','Los pequeños pasos importan.','Un día equilibrado. Déjalo fluir.','Energía hermosa. Canalízala.','¡Fantástico! Comparte esa luz.'],
+    stressMsg:['Estás tranquilo — un regalo.','Tensión leve. Respira despacio.','Estrés moderado. Tómate un descanso.','Elevado — prueba un paseo corto.','Estrés alto. Por favor descansa.'],
+    lbl:{cards:'Tarjetas',saved:'Guardado',breaths:'Respiros',tasks:'Tareas',moodLabel:'Estado de Ánimo',breathLabel:'Respiración',journalLabel:'Diario de Mañana',weeklyLabel:'Bienestar Semanal',stressLabel:'Rastreador de Estrés',wscore:'Puntuación de Bienestar',wscoreSub:'Por encima del promedio · Sigue adelante',stressInstr:'Evalúa tu estrés (1 calmado · 5 abrumado)',affLabel:'Afirmación de Hoy',nextBtn:'Siguiente Afirmación',copyBtn:'Copiar',beginBtn:'Empezar',stopBtn:'Parar',bnHome:'Inicio',bnAff:'Afirmar',bnWell:'Bienestar',bnExp:'Explorar',bnMenu:'Menú',expTitle:'Descubrir el Mundo',expSub:'Lugares · Festivales · Cocina · Comunidad',ivTitle:'Perspectivas por País',ivSub:'Explora tradiciones, filosofía y sabiduría de vida.',discPlaces:'Lugares Increíbles',discPlacesSub:'Joyas escondidas del mundo',discFood:'Cocina Mundial',discFoodSub:'Sabores del mundo',discFest:'Festivales Globales',discComm:'Comunidad',discCommSub:'Personas del mundo entero',discEvents:'Eventos',discEventsSub:'Congresos y encuentros',discArtSub:'Globalización artística',tapHint:'toca para revelar la reflexión →',toolsProd:'Productividad',toolTodo:'Tareas & Proyectos',toolTodoSub:'Planificador semanal · Reuniones',toolAI:'IA Responsiva',toolAISub:'Asistente inteligente · Analítica',toolAudio:'Audio a Texto',toolView:'Vista Completa & Widgets',toolOffline:'Sin conexión + Cifrado',ttMood:'Rastreador de Ánimo',ttCal:'Gráfico de Calorías',ttExp:'Gastos',qtAff:'Afirmaciones',qtWell:'Bienestar',qtWellSub:'Ánimo · Hábitos',qtExp:'Explorar',qtExpSub:'Mundo · Cultura',qtTools:'Herramientas & IA',qtToolsSub:'Funciones inteligentes',focus:'Enfoque',water:'Agua',gratitude:'Gratitud',uqSharing:'Compartir en Familia',uqSharingSub:'Conéctate con tus seres queridos',uqView:'Vista y Pantalla',uqViewSub:'Personaliza cómo ves Eunoia'},
+  }
+};
+
+let currentLang='EN';
+let allCards=[...CARDS],filtered=[...CARDS],currentIdx=0,saved=[],activeFilter='all';
+let breathInterval=null,breathPhase=0,breathCount=0,totalBreaths=0,chosenMood=null;
+let notifCount=3;
+
+/* ── INIT ── */
+function init(){
+  const now=new Date();
+  const days_en=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const days_es=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  const days=currentLang==='EN'?days_en:days_es;
+  document.getElementById('dayName').textContent=days[now.getDay()];
+  document.getElementById('dateFull').textContent=now.toLocaleDateString(currentLang==='EN'?'en-GB':'es-ES',{day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('clock').textContent=now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+  const h=now.getHours();
+  const gi=h<5?0:h<12?1:h<18?2:3;
+  document.getElementById('greeting').textContent=LANG[currentLang].greet[gi];
+  document.getElementById('jPrompt').textContent=PROMPTS[Math.floor(Math.random()*PROMPTS.length)];
+  renderCard();renderDots();initBreathCycles();renderScoreRing();
+  applyLangLabels();
+}
+
+/* ── LANGUAGE ── */
+function setLang(lang){
+  currentLang=lang;
+  document.getElementById('langEN').classList.toggle('on',lang==='EN');
+  document.getElementById('langES').classList.toggle('on',lang==='ES');
+  init();
+  showToast(lang==='ES'?'Idioma: Español':'Language: English');
+}
+function applyLangLabels(){
+  const L=LANG[currentLang].lbl;
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  set('lbl-cards',L.cards);set('lbl-saved',L.saved);set('lbl-breaths',L.breaths);set('lbl-tasks',L.tasks);
+  set('lbl-morning-mood',L.moodLabel);set('lbl-breath',L.breathLabel);set('lbl-journal',L.journalLabel);
+  set('lbl-weekly',L.weeklyLabel);set('lbl-stress',L.stressLabel);set('aff-label',L.affLabel);
+  set('btn-next',L.nextBtn);set('btn-copy',L.copyBtn);set('btn-begin',L.beginBtn);set('btn-stop',L.stopBtn);
+  set('bn-home',L.bnHome);set('bn-aff',L.bnAff);set('bn-well',L.bnWell);set('bn-exp',L.bnExp);set('bn-menu',L.bnMenu);
+  set('lbl-wscore',L.wscore);set('lbl-wscore-sub',L.wscoreSub);set('stress-instr',L.stressInstr);
+  set('exp-title',L.expTitle);set('exp-sub',L.expSub);set('iv-title',L.ivTitle);set('iv-sub',L.ivSub);
+  set('disc-places',L.discPlaces);set('disc-places-sub',L.discPlacesSub);set('disc-food',L.discFood);
+  set('disc-food-sub',L.discFoodSub);set('disc-fest',L.discFest);set('disc-comm',L.discComm);
+  set('disc-comm-sub',L.discCommSub);set('disc-events',L.discEvents);set('disc-events-sub',L.discEventsSub);
+  set('disc-art-sub',L.discArtSub);set('flip-tap-hint',L.tapHint);
+  set('tools-prod-hdr',L.toolsProd);set('tool-todo',L.toolTodo);set('tool-todo-sub',L.toolTodoSub);
+  set('tool-ai',L.toolAI);set('tool-ai-sub',L.toolAISub);set('tool-audio',L.toolAudio);
+  set('tool-view',L.toolView);set('tool-offline',L.toolOffline);
+  set('tt-mood',L.ttMood);set('tt-cal',L.ttCal);set('tt-exp',L.ttExp);
+  set('qt-aff',L.qtAff);set('qt-well',L.qtWell);set('qt-well-sub',L.qtWellSub);
+  set('qt-exp',L.qtExp);set('qt-exp-sub',L.qtExpSub);set('qt-tools',L.qtTools);set('qt-tools-sub',L.qtToolsSub);
+  set('int-focus',L.focus);set('int-water',L.water);set('int-gratitude',L.gratitude);
+  set('uq-sharing',L.uqSharing);set('uq-sharing-sub',L.uqSharingSub);
+  set('uq-view',L.uqView);set('uq-view-sub',L.uqViewSub);
+  /* Uniqlo tab labels */
+  const uqTabs=document.querySelectorAll('.uq-tab');
+  const uqLabels=currentLang==='ES'?['Social','Complementos','Productividad','Funciones']:['Social','Add-ons','Productivity','Features'];
+  uqTabs.forEach((t,i)=>{if(uqLabels[i])t.textContent=uqLabels[i];});
+  const menuTitle=document.querySelector('.uniqlo-top-title');
+  if(menuTitle)menuTitle.textContent=currentLang==='ES'?'Menú':'Menu';
+  const cta=document.getElementById('uq-cta-main');
+  if(cta)cta.textContent=currentLang==='ES'?'Explorar Funciones':'Explore Features';
+}
+
+/* ── TABS ── */
+function switchTab(id,el){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('vis'));
+  document.getElementById(id).classList.add('vis');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  const tabMap={home:0,affirmations:1,wellness:2,explore:3,tools:4};
+  const tabs=document.querySelectorAll('.tab');
+  if(typeof tabMap[id]!=='undefined'&&tabs[tabMap[id]])tabs[tabMap[id]].classList.add('on');
+  if(el)el.classList.add('on');
+  if(id==='affirmations'){setTimeout(()=>{const cb=document.getElementById('chart-body');if(cb&&!cb.classList.contains('hidden'))initMoodChart();},200);}
+}
+function setBottomNav(el){document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('on'));el.classList.add('on');}
+
+/* ── PANELS ── */
+function togglePanel(id,bodyId){
+  const body=document.getElementById(bodyId);const chev=document.getElementById('chev-'+id);
+  body.classList.toggle('hidden');if(chev)chev.classList.toggle('open');
+  if(!body.classList.contains('hidden')&&bodyId==='chart-body')setTimeout(initMoodChart,80);
+  if(!body.classList.contains('hidden')&&bodyId==='breath-body')initBreathCycles();
+}
+
+/* ── BELL NOTIFICATION ── */
+function toggleNotif(){
+  const panel=document.getElementById('notifPanel');
+  const btn=document.getElementById('bellBtn');
+  panel.classList.toggle('show');
+  if(panel.classList.contains('show'))btn.classList.add('shake');
+  setTimeout(()=>btn.classList.remove('shake'),600);
+}
+function markNotifRead(item){
+  const dot=item.querySelector('.notif-unread');
+  if(dot){dot.remove();notifCount=Math.max(0,notifCount-1);document.getElementById('notifCount').textContent=notifCount;}
+  if(notifCount===0)document.getElementById('bellDot').style.display='none';
+}
+function clearNotifs(){
+  document.getElementById('notif-list').innerHTML='<div style="padding:14px;text-align:center;font-size:10px;color:var(--fg3);font-style:italic;">No new notifications</div>';
+  notifCount=0;document.getElementById('notifCount').textContent=0;
+  document.getElementById('bellDot').style.display='none';
+  document.getElementById('notifPanel').classList.remove('show');
+}
+document.addEventListener('click',function(e){
+  const panel=document.getElementById('notifPanel');
+  const btn=document.getElementById('bellBtn');
+  if(!btn.contains(e.target)&&!panel.contains(e.target))panel.classList.remove('show');
+});
+
+/* ── UNIQLO MENU ── */
+function openMenu(){document.getElementById('uniqloMenu').classList.add('open');}
+function closeMenu(){document.getElementById('uniqloMenu').classList.remove('open');}
+function switchUQTab(id,el){
+  document.querySelectorAll('.uq-section').forEach(s=>s.classList.remove('vis'));
+  document.getElementById('uq-'+id).classList.add('vis');
+  document.querySelectorAll('.uq-tab').forEach(t=>t.classList.remove('on'));
+  if(el)el.classList.add('on');
+}
+function toggleUQBlock(id){
+  const body=document.getElementById(id);const chev=document.getElementById('chev-'+id);
+  body.classList.toggle('open');if(chev)chev.classList.toggle('open');
+}
+
+/* ── MEMBER PANEL ── */
+function toggleMember(){
+  const p=document.getElementById('memberPanel');
+  p.classList.toggle('show');
+}
+function closeMember(){
+  document.getElementById('memberPanel').classList.remove('show');
+}
+document.addEventListener('click',function(e){
+  const panel=document.getElementById('memberPanel');
+  const btn=document.getElementById('memberBtn');
+  if(panel&&btn&&!btn.contains(e.target)&&!panel.contains(e.target))panel.classList.remove('show');
+});
+
+/* ── MENU TIER FILTER (Features tab) ── */
+function filterMenuTier(tier,el){
+  document.querySelectorAll('.menu-tier-pill').forEach(p=>p.classList.remove('active'));
+  if(el)el.classList.add('active');
+  document.querySelectorAll('#uq-features .sb-feat-item').forEach(item=>{
+    item.style.display=(tier==='all'||item.dataset.tier===tier)?'flex':'none';
+  });
+}
+
+/* ── SIDEBAR TIER FILTER (legacy — kept for compatibility) ── */
+function filterSidebarTier(tier,el){
+  filterMenuTier(tier,null);
+}
+
+function toggleSBGroup(id){
+  const body=document.getElementById(id);const chev=document.getElementById('chev-'+id);
+  if(body)body.classList.toggle('open');if(chev)chev.classList.toggle('open');
+}
+
+function renderCard(){
+  if(!filtered.length)return;
+  const c=filtered[currentIdx];
+  const set=(id,v,prop)=>{const el=document.getElementById(id);if(el){if(prop)el.style[prop]=v;else el.textContent=v;}};
+  set('cd-domain',c.domain);document.getElementById('cd-domain').style.color=c.color;
+  set('cd-aff',c.aff);set('cd-ref',c.ref);set('cd-hint',c.hint);
+  document.getElementById('cd-domain-b').style.color=c.color;
+  const fb=document.getElementById('fav-btn');if(fb)fb.classList.toggle('saved',saved.some(s=>s.aff===c.aff));
+  const fi=document.getElementById('flip-inner');if(fi)fi.classList.remove('flipped');
+}
+function renderDots(){
+  const dc=document.getElementById('card-dots');if(!dc)return;dc.innerHTML='';
+  const n=Math.min(filtered.length,8);
+  for(let i=0;i<n;i++){const d=document.createElement('div');d.className='cdot'+(i===currentIdx%n?' on':'');dc.appendChild(d);}
+}
+function flipCard(){const fi=document.getElementById('flip-inner');if(fi)fi.classList.toggle('flipped');}
+function nextCard(){currentIdx=(currentIdx+1)%filtered.length;renderCard();renderDots();}
+function prevCard(){currentIdx=(currentIdx-1+filtered.length)%filtered.length;renderCard();renderDots();}
+function shuffleCards(){filtered=[...filtered].sort(()=>Math.random()-.5);currentIdx=0;renderCard();renderDots();showToast(currentLang==='ES'?'Mazo mezclado':'Deck shuffled');}
+function setFilter(d,el){
+  document.querySelectorAll('.fil').forEach(b=>{b.className='fil';});
+  if(el){el.classList.add('on');if(d!=='all')el.classList.add(d+'-on');}
+  activeFilter=d;filtered=d==='all'?[...allCards]:allCards.filter(c=>c.d===d);
+  currentIdx=0;renderCard();renderDots();
+}
+function toggleFav(){
+  const c=filtered[currentIdx];const idx=saved.findIndex(s=>s.aff===c.aff);
+  if(idx>=0){saved.splice(idx,1);showToast(currentLang==='ES'?'Eliminado':'Removed');}
+  else{saved.push(c);showToast(currentLang==='ES'?'Guardado ✓':'Saved ✓');}
+  document.getElementById('fav-btn').classList.toggle('saved',saved.some(s=>s.aff===c.aff));
+  document.getElementById('s-saved').textContent=saved.length;
+}
+
+/* ── MOOD ── */
+function pickMood(i,el){
+  chosenMood=i;
+  document.querySelectorAll('.mood-btn').forEach((b,j)=>{b.classList.toggle('chosen',j===i);b.style.borderColor=j===i?MOOD_COLORS[i]:'';});
+  const fb=document.getElementById('mood-fb');
+  if(fb){fb.textContent=LANG[currentLang].moodMsg[i];fb.style.color=MOOD_COLORS[i];}
+  showToast(currentLang==='ES'?'Estado registrado ✓':'Mood recorded ✓');
+}
+
+/* ── BREATHWORK ── */
+const PHASES_EN=['Inhale','Hold','Exhale','Hold'];
+const PHASES_ES=['Inhala','Mantén','Exhala','Mantén'];
+const PHASE_DUR=[4,4,4,4];
+function initBreathCycles(){
+  const bc=document.getElementById('b-cycles');if(!bc)return;bc.innerHTML='';
+  for(let i=0;i<4;i++){const c=document.createElement('div');c.className='bcircle';c.id='bci'+i;c.textContent=i+1;bc.appendChild(c);}
+}
+function startBreath(){if(breathInterval)return;breathPhase=0;breathCount=0;runPhase();}
+function runPhase(){
+  const ring=document.getElementById('b-ring');const lbl=document.getElementById('b-lbl');const sub=document.getElementById('b-sub');
+  if(!ring||!lbl)return;
+  const PHASES=currentLang==='ES'?PHASES_ES:PHASES_EN;
+  lbl.textContent=PHASES[breathPhase];
+  if(breathPhase===0)ring.style.animation='bExpand '+PHASE_DUR[0]+'s ease forwards';
+  else if(breathPhase===2)ring.style.animation='bContract '+PHASE_DUR[2]+'s ease forwards';
+  else ring.style.animation='';
+  let t=PHASE_DUR[breathPhase];sub.textContent=t+'s';
+  breathInterval=setInterval(()=>{
+    t--;sub.textContent=t+'s';
+    if(t<=0){
+      clearInterval(breathInterval);breathInterval=null;breathPhase=(breathPhase+1)%4;
+      if(breathPhase===0){
+        breathCount++;totalBreaths++;document.getElementById('s-breaths').textContent=totalBreaths;
+        const bc=document.getElementById('bci'+(breathCount-1));if(bc)bc.classList.add('done');
+        if(breathCount>=4){stopBreath();showToast(currentLang==='ES'?'Sesión completa ✓':'Session complete ✓');return;}
+      }
+      runPhase();
+    }
+  },1000);
+}
+function stopBreath(){
+  if(breathInterval){clearInterval(breathInterval);breathInterval=null;}
+  const lbl=document.getElementById('b-lbl');const sub=document.getElementById('b-sub');const ring=document.getElementById('b-ring');
+  if(lbl)lbl.textContent=currentLang==='ES'?'Listo':'Ready';if(sub)sub.textContent='4·4·4·4';if(ring)ring.style.animation='';breathPhase=0;
+}
+
+/* ── STRESS ── */
+function setStress(v,el){
+  document.querySelectorAll('.stress-btn').forEach((b,i)=>{b.style.background=i<v?'rgba(107,144,112,.25)':'';b.style.borderColor=i<v?'var(--sage)':'';b.style.color=i<v?'var(--mint)':'';});
+  const fb=document.getElementById('stress-fb');if(fb)fb.textContent=LANG[currentLang].stressMsg[v-1];
+  showToast(currentLang==='ES'?'Nivel de estrés registrado':'Stress level recorded');
+}
+
+/* ── JOURNAL ── */
+function updateWC(){const t=document.getElementById('jArea').value.trim();const w=t?t.split(/\s+/).length:0;document.getElementById('wc').textContent=w+(currentLang==='ES'?' palabras':' words');}
+function copyJournal(){const t=document.getElementById('jArea').value;if(!t.trim())return;navigator.clipboard.writeText(t).then(()=>showToast(currentLang==='ES'?'Copiado ✓':'Copied ✓'));}
+
+/* ── CHART ── */
+let moodChart=null;
+function initMoodChart(){
+  const canvas=document.getElementById('moodChart');if(!canvas)return;
+  if(moodChart){moodChart.destroy();moodChart=null;}
+  const days_en=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const days_es=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+  const days=currentLang==='ES'?days_es:days_en;
+  moodChart=new Chart(canvas,{type:'line',data:{labels:days,datasets:[
+    {label:'Mood',data:[3,4,3,null,4,5,null],borderColor:'#6b9070',backgroundColor:'rgba(107,144,112,.06)',tension:.4,pointRadius:3,pointBackgroundColor:'#6b9070',spanGaps:true},
+    {label:'EQ',data:[4,4,5,4,4,4,null],borderColor:'#8c87c2',backgroundColor:'rgba(140,135,194,.05)',tension:.4,pointRadius:3,pointBackgroundColor:'#8c87c2',spanGaps:true},
+    {label:'Energy',data:[3,4,4,4,5,4,null],borderColor:'#c9a84c',backgroundColor:'rgba(201,168,76,.05)',tension:.4,pointRadius:3,pointBackgroundColor:'#c9a84c',spanGaps:true},
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(180,155,130,.12)'},ticks:{color:'#7a8f7c',font:{size:9,family:'Instrument Sans'}}},y:{min:1,max:5,grid:{color:'rgba(180,155,130,.12)'},ticks:{color:'#7a8f7c',stepSize:1,font:{size:9,family:'Instrument Sans'}}}}}});
+}
+
+/* ── SCORE RING ── */
+function renderScoreRing(){
+  const canvas=document.getElementById('scoreRing');if(!canvas)return;
+  const ctx=canvas.getContext('2d');const cx=30,cy=30,r=24,lw=3.5;
+  ctx.clearRect(0,0,60,60);
+  ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.strokeStyle='rgba(180,155,130,.18)';ctx.lineWidth=lw;ctx.stroke();
+  ctx.beginPath();ctx.arc(cx,cy,r,-Math.PI/2,-Math.PI/2+Math.PI*2*.78);ctx.strokeStyle='#6b9070';ctx.lineWidth=lw;ctx.lineCap='round';ctx.stroke();
+}
+
+/* ── SETTINGS PANEL ── */
+function openSettings(){
+  document.getElementById('settingsOverlay').classList.add('show');
+}
+function closeSettings(){
+  document.getElementById('settingsOverlay').classList.remove('show');
+}
+
+/* ── THEME SWITCHER ── */
+const DARK_THEMES=['dark-obsidian','dark-midnight','dark-ember','dark-aurora','dark-velvet'];
+function setTheme(name,el,cardId){
+  // Remove all theme classes
+  const allThemes=['theme-andalucia','theme-azulejo','theme-flamenco','theme-seville','theme-granada',
+    'theme-dark-obsidian','theme-dark-midnight','theme-dark-ember','theme-dark-aurora','theme-dark-velvet'];
+  document.body.classList.remove(...allThemes);
+  document.body.classList.add('theme-'+name);
+
+  // Update active card
+  document.querySelectorAll('.theme-card').forEach(c=>c.classList.remove('active'));
+  if(cardId) document.getElementById(cardId)&&document.getElementById(cardId).classList.add('active');
+
+  // Handle dark mode text/icon adjustments
+  const isDark = DARK_THEMES.includes(name);
+  document.body.dataset.dark = isDark ? '1' : '0';
+
+  const labels={
+    'andalucia':'🌅 Andalucía','azulejo':'🟦 Azulejo','flamenco':'💃 Flamenco',
+    'seville':'🌻 Sevilla','granada':'🕌 Granada',
+    'dark-obsidian':'🔮 Obsidian','dark-midnight':'🌃 Midnight',
+    'dark-ember':'🔥 Ember','dark-aurora':'🌌 Aurora','dark-velvet':'💜 Velvet'
+  };
+  showToast(labels[name]||name);
+}
+
+/* ── TOAST ── */
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+
+// Set default theme on load
+document.body.classList.add('theme-andalucia');
+init();
+</script>
+</body>
+</html>
