@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Atlas · Interactive World Map</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    color-scheme: dark;
+    --bg-0: #07090f;
+    --bg-1: #0b0f1a;
+    --bg-2: #121827;
+    --panel: rgba(16, 22, 38, 0.72);
+    --panel-border: rgba(140, 170, 255, 0.14);
+    --ink: #e7ecf5;
+    --ink-dim: #9aa6bf;
+    --ink-mute: #6b7a99;
+    --accent: #7c5cff;
+    --accent-2: #22d3ee;
+    --accent-3: #f472b6;
+    --ok: #34d399;
+    --ring: 0 0 0 1px rgba(124, 92, 255, 0.45), 0 20px 60px -10px rgba(10, 14, 30, 0.7);
+    --grid-line: rgba(255,255,255,0.025);
+    --stage-shadow: 0 40px 80px -30px rgba(0,0,0,0.6);
+    --tooltip-bg: linear-gradient(180deg, rgba(22, 28, 48, 0.95), rgba(12, 16, 28, 0.95));
+    --tooltip-border: rgba(124, 92, 255, 0.35);
+    --kbd-bg: rgba(255,255,255,0.06);
+    --kbd-border: rgba(255,255,255,0.08);
+    --modal-backdrop: radial-gradient(800px 600px at 50% 40%, rgba(124, 92, 255, 0.18), transparent 70%), rgba(5, 7, 13, 0.72);
+    --modal-bg: linear-gradient(180deg, rgba(20, 26, 46, 0.95), rgba(10, 14, 26, 0.98));
+    --modal-hero-bg:
+      radial-gradient(600px 240px at 10% 0%, rgba(124, 92, 255, 0.35), transparent 60%),
+      radial-gradient(500px 240px at 110% 100%, rgba(34, 211, 238, 0.22), transparent 60%),
+      linear-gradient(180deg, rgba(30, 38, 62, 0.6), rgba(20, 26, 46, 0.4));
+    --modal-foot-bg: rgba(8, 12, 22, 0.6);
+
+    /* Map palette (SVG gradients) */
+    --ocean-0: #0a1020;
+    --ocean-1: #0d1830;
+    --land-0: #1e2948;
+    --land-1: #161d36;
+  }
+
+  html[data-theme="light"] {
+    color-scheme: light;
+    --bg-0: #f6f8ff;
+    --bg-1: #eef2ff;
+    --bg-2: #e9efff;
+    --panel: rgba(255, 255, 255, 0.72);
+    --panel-border: rgba(40, 60, 120, 0.14);
+    --ink: #0b1220;
+    --ink-dim: rgba(11, 18, 32, 0.72);
+    --ink-mute: rgba(11, 18, 32, 0.55);
+    --ring: 0 0 0 1px rgba(124, 92, 255, 0.28), 0 20px 60px -10px rgba(2, 6, 23, 0.18);
+    --grid-line: rgba(12, 18, 32, 0.055);
+    --stage-shadow: 0 40px 80px -30px rgba(2, 6, 23, 0.22);
+    --tooltip-bg: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(247,250,255,0.96));
+    --tooltip-border: rgba(124, 92, 255, 0.28);
+    --kbd-bg: rgba(12, 18, 32, 0.06);
+    --kbd-border: rgba(12, 18, 32, 0.10);
+    --modal-backdrop: radial-gradient(900px 700px at 50% 40%, rgba(124, 92, 255, 0.16), transparent 70%), rgba(235, 240, 255, 0.72);
+    --modal-bg: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(247,250,255,0.98));
+    --modal-hero-bg:
+      radial-gradient(600px 240px at 10% 0%, rgba(124, 92, 255, 0.18), transparent 60%),
+      radial-gradient(500px 240px at 110% 100%, rgba(34, 211, 238, 0.14), transparent 60%),
+      linear-gradient(180deg, rgba(255,255,255,0.65), rgba(247,250,255,0.55));
+    --modal-foot-bg: rgba(245, 248, 255, 0.85);
+
+    /* Map palette (SVG gradients) */
+    --ocean-0: #dbeafe;
+    --ocean-1: #bfdbfe;
+    --land-0: #f8fafc;
+    --land-1: #e2e8f0;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(1200px 700px at 10% -10%, rgba(124, 92, 255, 0.18), transparent 60%),
+      radial-gradient(900px 600px at 110% 20%, rgba(34, 211, 238, 0.14), transparent 60%),
+      radial-gradient(800px 500px at 50% 120%, rgba(244, 114, 182, 0.1), transparent 60%),
+      linear-gradient(180deg, var(--bg-0), var(--bg-1) 60%, var(--bg-2));
+    overflow-x: hidden;
+  }
+
+  /* Soft grid backdrop */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 48px 48px, 48px 48px;
+    mask-image: radial-gradient(ellipse at center, black 50%, transparent 85%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app {
+    position: relative;
+    z-index: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 32px 28px 80px;
+  }
+
+  header.top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .brand .logo {
+    width: 42px; height: 42px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.9);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.55), inset 0 0 0 1px rgba(255,255,255,0.20);
+    object-fit: contain;
+    padding: 6px;
+  }
+  .brand h1 {
+    margin: 0;
+    font-size: 20px;
+    letter-spacing: 0.2px;
+    font-weight: 700;
+  }
+  .brand .sub {
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: var(--ink-mute);
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+  }
+
+  .meta {
+    display: flex; align-items: center; gap: 18px;
+    color: var(--ink-dim);
+    font-size: 13px;
+  }
+  .meta .pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 12px;
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 999px;
+    backdrop-filter: blur(10px);
+  }
+  .pill .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--ok);
+    box-shadow: 0 0 12px var(--ok);
+    animation: pulse 2.2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.55; transform: scale(0.85); }
+  }
+
+  .hero {
+    padding: 4px 2px 20px;
+  }
+  .hero h2 {
+    font-size: clamp(28px, 4vw, 44px);
+    line-height: 1.05;
+    margin: 8px 0 10px;
+    letter-spacing: -0.5px;
+    font-weight: 800;
+    background: linear-gradient(90deg, #fff 0%, #c9d3ee 60%, #7c5cff 120%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .hero p {
+    color: var(--ink-dim);
+    margin: 0;
+    max-width: 720px;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .stage {
+    position: relative;
+    margin-top: 22px;
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: var(--stage-shadow);
+    backdrop-filter: blur(12px);
+  }
+  .stage::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(600px 400px at 15% 10%, rgba(124, 92, 255, 0.12), transparent 60%),
+      radial-gradient(500px 360px at 90% 90%, rgba(34, 211, 238, 0.10), transparent 60%);
+    pointer-events: none;
+  }
+
+  .stage-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    position: relative;
+  }
+  html[data-theme="light"] .stage-header {
+    border-bottom-color: rgba(12, 18, 32, 0.08);
+  }
+  .stage-header .dots { display: flex; gap: 6px; }
+  .stage-header .dots span {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+  }
+  .stage-header .dots span:nth-child(1) { background: #ff5f57; }
+  .stage-header .dots span:nth-child(2) { background: #febc2e; }
+  .stage-header .dots span:nth-child(3) { background: #28c840; }
+  .stage-header .title {
+    font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .stage-header .hint {
+    font-size: 12px; color: var(--ink-mute);
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .kbd {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 6px;
+    background: var(--kbd-bg);
+    border: 1px solid var(--kbd-border);
+    color: var(--ink-dim);
+  }
+
+  .map-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+  }
+  svg.world {
+    width: 100%;
+    height: 100%;
+    display: block;
+    cursor: grab;
+  }
+  svg.world:active { cursor: grabbing; }
+
+  .graticule {
+    fill: none;
+    stroke: rgba(124, 144, 200, 0.08);
+    stroke-width: 0.5;
+  }
+  .sphere {
+    fill: url(#oceanGradient);
+    stroke: rgba(124, 92, 255, 0.25);
+    stroke-width: 0.8;
+  }
+  .country {
+    fill: url(#landGradient);
+    stroke: rgba(10, 14, 30, 0.9);
+    stroke-width: 0.45;
+    vector-effect: non-scaling-stroke;
+    transition: fill 160ms ease, filter 200ms ease;
+    cursor: pointer;
+  }
+
+  /* Make map outlines feel correct in light mode */
+  html[data-theme="light"] .graticule { stroke: rgba(12, 18, 32, 0.10); }
+  html[data-theme="light"] .sphere { stroke: rgba(124, 92, 255, 0.22); }
+  html[data-theme="light"] .country { stroke: rgba(12, 18, 32, 0.45); }
+  .country:hover {
+    fill: url(#landHover);
+    filter: drop-shadow(0 0 10px rgba(124, 92, 255, 0.55));
+  }
+  .country.selected {
+    fill: url(#landSelected) !important;
+    filter: drop-shadow(0 0 14px rgba(244, 114, 182, 0.65));
+  }
+
+  /* Tooltip with arrow */
+  .tooltip {
+    position: fixed;
+    z-index: 60;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.96);
+    transition: opacity 140ms ease, transform 180ms cubic-bezier(.2,.9,.25,1.2);
+    font-family: 'Inter', sans-serif;
+  }
+  .tooltip.visible {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  .tooltip .card {
+    position: relative;
+    min-width: 210px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: var(--tooltip-bg);
+    border: 1px solid var(--tooltip-border);
+    box-shadow: var(--ring);
+    backdrop-filter: blur(14px);
+  }
+  .tooltip .flag {
+    display: inline-block;
+    margin-right: 8px;
+    font-size: 16px;
+    line-height: 1;
+    vertical-align: middle;
+  }
+  .tooltip .name {
+    display: inline-block;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.2px;
+    color: var(--ink);
+    vertical-align: middle;
+  }
+  .tooltip .row {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 12px;
+    color: var(--ink-dim);
+  }
+  .tooltip .time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: 0.5px;
+  }
+  .tooltip .tz {
+    font-size: 11px;
+    color: var(--ink-mute);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+  }
+  .tooltip .hint {
+    margin-top: 8px;
+    font-size: 10.5px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+
+  /* Arrow line rendered as SVG overlay */
+  .arrow-overlay {
+    position: fixed;
+    pointer-events: none;
+    inset: 0;
+    z-index: 55;
+    opacity: 0;
+    transition: opacity 140ms ease;
+  }
+  .arrow-overlay.visible { opacity: 1; }
+  .arrow-overlay .arrow-line {
+    stroke: url(#arrowGrad);
+    stroke-width: 1.5;
+    fill: none;
+    stroke-dasharray: 4 4;
+    animation: dash 1.2s linear infinite;
+  }
+  .arrow-overlay .arrow-head {
+    fill: #f472b6;
+  }
+  .arrow-overlay .pulse-ring {
+    fill: none;
+    stroke: #f472b6;
+    stroke-width: 1.5;
+    opacity: 0.9;
+    animation: ring 1.6s ease-out infinite;
+  }
+  @keyframes dash { to { stroke-dashoffset: -16; } }
+  @keyframes ring {
+    0% { r: 3; opacity: 0.9; }
+    100% { r: 18; opacity: 0; }
+  }
+
+  /* Modal */
+  .modal-backdrop {
+    position: fixed; inset: 0;
+    background: var(--modal-backdrop);
+    backdrop-filter: blur(10px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    opacity: 0;
+    transition: opacity 220ms ease;
+  }
+  .modal-backdrop.open {
+    display: flex;
+    opacity: 1;
+  }
+  .modal {
+    width: min(940px, 92vw);
+    max-height: 88vh;
+    overflow: hidden;
+    border-radius: 22px;
+    background: var(--modal-bg);
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 60px 120px -20px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(124, 92, 255, 0.12);
+    transform: translateY(18px) scale(0.98);
+    opacity: 0;
+    transition: transform 360ms cubic-bezier(.2,.9,.25,1.1), opacity 240ms ease;
+    display: flex;
+    flex-direction: column;
+  }
+  html[data-theme="light"] .modal {
+    border-color: rgba(12, 18, 32, 0.12);
+    box-shadow: 0 60px 120px -20px rgba(2, 6, 23, 0.24), inset 0 0 0 1px rgba(124, 92, 255, 0.08);
+  }
+  .modal-backdrop.open .modal {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+
+  .modal-hero {
+    position: relative;
+    padding: 28px 30px 22px;
+    background: var(--modal-hero-bg);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  html[data-theme="light"] .modal-hero {
+    border-bottom-color: rgba(12, 18, 32, 0.10);
+  }
+  .modal-hero .crumb {
+    font-size: 11px;
+    letter-spacing: 2.2px;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .modal-hero h3 {
+    margin: 8px 0 6px;
+    font-size: 34px;
+    letter-spacing: -0.6px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .modal-hero h3 .flag {
+    font-size: 34px;
+  }
+  .modal-hero .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #c9d3ee;
+    background: rgba(124, 92, 255, 0.15);
+    border: 1px solid rgba(124, 92, 255, 0.35);
+    padding: 6px 10px;
+    border-radius: 999px;
+    margin-right: 6px;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 16px; right: 18px;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.05);
+    color: var(--ink);
+    cursor: pointer;
+    font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 180ms ease;
+  }
+  .modal-close:hover {
+    background: rgba(244, 114, 182, 0.2);
+    border-color: rgba(244, 114, 182, 0.5);
+    transform: rotate(90deg);
+  }
+
+  .modal-body {
+    padding: 24px 30px 28px;
+    overflow-y: auto;
+  }
+  .modal-body::-webkit-scrollbar { width: 8px; }
+  .modal-body::-webkit-scrollbar-thumb { background: rgba(124, 92, 255, 0.3); border-radius: 4px; }
+
+  .grid {
+    display: grid;
+    gap: 14px;
+  }
+  .grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 720px) {
+    .grid.cols-3, .grid.cols-2 { grid-template-columns: 1fr; }
+  }
+
+  .stat {
+    padding: 16px;
+    border-radius: 14px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+    border: 1px solid rgba(255,255,255,0.06);
+    position: relative;
+    overflow: hidden;
+  }
+  .stat::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    opacity: 0.8;
+  }
+  .stat .k {
+    font-size: 11px;
+    color: var(--ink-mute);
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+  }
+  .stat .v {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    font-weight: 600;
+    margin-top: 6px;
+    color: #fff;
+  }
+  .stat .d {
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--ink-dim);
+  }
+
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 2.2px;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin: 22px 0 10px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-label::after {
+    content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.06);
+  }
+
+  .card {
+    padding: 16px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .card h4 {
+    margin: 0 0 6px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .card p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--ink-dim);
+    line-height: 1.55;
+  }
+  .card .icon {
+    width: 34px; height: 34px; border-radius: 10px;
+    display: inline-flex; align-items: center; justify-content: center;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, rgba(124, 92, 255, 0.3), rgba(34, 211, 238, 0.25));
+    border: 1px solid rgba(124, 92, 255, 0.35);
+    font-size: 16px;
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+    margin-bottom: 8px;
+  }
+  .bar .label { font-size: 13px; }
+  .bar .track {
+    flex: 1;
+    height: 6px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.05);
+    overflow: hidden;
+    max-width: 55%;
+  }
+  .bar .fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  }
+  .bar .val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--ink-dim);
+    min-width: 54px;
+    text-align: right;
+  }
+
+  .modal-foot {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px; padding: 16px 24px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    background: var(--modal-foot-bg);
+  }
+  html[data-theme="light"] .modal-foot {
+    border-top-color: rgba(12, 18, 32, 0.10);
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04);
+    color: var(--ink);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 180ms ease;
+  }
+  .btn:hover {
+    border-color: rgba(124, 92, 255, 0.5);
+    background: rgba(124, 92, 255, 0.12);
+    transform: translateY(-1px);
+  }
+  .btn.primary {
+    background: linear-gradient(135deg, var(--accent), #5b3cff);
+    border-color: transparent;
+  }
+  .btn.primary:hover { filter: brightness(1.1); }
+
+  /* Theme toggle */
+  .theme-toggle {
+    appearance: none;
+    border: 1px solid var(--panel-border);
+    background: var(--panel);
+    color: var(--ink);
+    border-radius: 999px;
+    padding: 8px 12px;
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    backdrop-filter: blur(10px);
+    transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+  }
+  .theme-toggle:hover {
+    transform: translateY(-1px);
+    border-color: rgba(124, 92, 255, 0.45);
+  }
+
+  footer.foot {
+    margin-top: 24px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--ink-mute);
+  }
+
+  /* Loading */
+  .loader {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink-mute);
+    font-size: 13px;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+  }
+  .loader .spinner {
+    width: 18px; height: 18px; margin-right: 10px;
+    border: 2px solid rgba(124, 92, 255, 0.3);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+  <div class="app">
+    <header class="top">
+      <div class="brand">
+        <img
+          class="logo"
+          src="https://static.wixstatic.com/media/87d5de_a8862dc06ef54fb9af7c2709e3bd5fe2~mv2_d_2083_2083_s_2.png/v1/fill/w_73,h_73,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Entrust%20Logo%20Plain.png"
+          alt="Entrust"
+          width="42"
+          height="42"
+          loading="eager"
+          decoding="async"
+        />
+        <div>
+          <h1>Entrust Software</h1>
+          <!-- <p class="sub">Interactive World Explorer</p> -->
+        </div>
+      </div>
+      <div class="meta">
+        <span class="pill"><span class="dot"></span><span id="utcClock">UTC —</span></span>
+        <span class="pill">195 Countries</span>
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle color theme">
+          <span id="themeIcon" aria-hidden="true">🌙</span>
+          <span id="themeLabel">Dark</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- <section class="hero">
+      <h2>Hover a country to see its local time.<br/>Click to open the dossier.</h2>
+      <p>Every nation tells a story in its time zone. Glide across the globe and discover where the sun rises and sets — in real time.</p>
+    </section> -->
+
+    <div class="stage">
+      <div class="stage-header">
+        <!-- <div class="dots"><span></span><span></span><span></span></div> -->
+        <div class="title">Live · Real-Time Projection</div>
+        <!-- <div class="hint">Hover <span class="kbd">⌘</span><span class="kbd">Click</span></div> -->
+      </div>
+      <div class="map-wrap" id="mapWrap">
+        <div class="loader" id="loader"><span class="spinner"></span> Loading world data…</div>
+        <svg class="world" id="worldSvg" viewBox="0 0 1000 560" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <linearGradient id="oceanGradient" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" style="stop-color: var(--ocean-0)" />
+              <stop offset="100%" style="stop-color: var(--ocean-1)" />
+            </linearGradient>
+            <linearGradient id="landGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" style="stop-color: var(--land-0)" />
+              <stop offset="100%" style="stop-color: var(--land-1)" />
+            </linearGradient>
+            <linearGradient id="landHover" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#7c5cff" />
+              <stop offset="100%" stop-color="#5b3cff" />
+            </linearGradient>
+            <linearGradient id="landSelected" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#f472b6" />
+              <stop offset="100%" stop-color="#c026d3" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+    </div>
+
+    <footer class="foot">© Entrust Software 2026</footer>
+  </div>
+
+  <!-- Tooltip -->
+  <div class="tooltip" id="tooltip">
+    <div class="card">
+      <div>
+        <span class="flag" id="tt-flag">🌍</span>
+        <span class="name" id="tt-name">Country</span>
+      </div>
+      <div class="row">
+        <div class="time" id="tt-time">--:--:--</div>
+        <div class="tz" id="tt-tz">UTC</div>
+      </div>
+      <div class="hint">Click to open dossier →</div>
+    </div>
+  </div>
+
+  <!-- Arrow overlay -->
+  <svg class="arrow-overlay" id="arrowOverlay">
+    <defs>
+      <linearGradient id="arrowGrad" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#7c5cff" />
+        <stop offset="100%" stop-color="#f472b6" />
+      </linearGradient>
+      <marker id="arrowHead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+        <path d="M0,0 L10,5 L0,10 z" fill="#f472b6" />
+      </marker>
+    </defs>
+    <path class="arrow-line" id="arrowLine" d="" marker-end="url(#arrowHead)" />
+    <circle class="pulse-ring" id="pulseRing" cx="0" cy="0" r="3" />
+  </svg>
+
+  <!-- Modal -->
+  <div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal" id="modal">
+      <div class="modal-hero">
+        <div class="crumb">Country Dossier · Atlas Archive</div>
+        <h3><span class="flag" id="m-flag">🌍</span><span id="m-name">Country Name</span></h3>
+        <div>
+          <span class="tag">📍 <span id="m-region">Region</span></span>
+          <span class="tag">🕐 <span id="m-time">--:--</span> local</span>
+          <span class="tag">🌐 <span id="m-code">--</span></span>
+        </div>
+        <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="grid cols-3">
+          <div class="stat">
+            <div class="k">Population</div>
+            <div class="v" id="s-pop">—</div>
+            <div class="d">Estimated, rounded</div>
+          </div>
+          <div class="stat">
+            <div class="k">Capital</div>
+            <div class="v" id="s-cap">—</div>
+            <div class="d">Administrative center</div>
+          </div>
+          <div class="stat">
+            <div class="k">Currency</div>
+            <div class="v" id="s-cur">—</div>
+            <div class="d">Primary legal tender</div>
+          </div>
+        </div>
+
+        <div class="section-label">Highlights</div>
+        <div class="grid cols-3">
+          <div class="card">
+            <div class="icon">🏛️</div>
+            <h4>Heritage</h4>
+            <p>Centuries of culture layered into architecture, cuisine, and language — a living archive of identity.</p>
+          </div>
+          <div class="card">
+            <div class="icon">🌄</div>
+            <h4>Landscape</h4>
+            <p>From coastlines to highlands, the terrain writes its own weather and shapes how people live.</p>
+          </div>
+          <div class="card">
+            <div class="icon">🚀</div>
+            <h4>Innovation</h4>
+            <p>A growing footprint in research, design, and technology — exporting ideas alongside goods.</p>
+          </div>
+        </div>
+
+        <div class="section-label">At a glance</div>
+        <div>
+          <div class="bar"><span class="label">Human Development</span><div class="track"><div class="fill" style="width:78%"></div></div><span class="val">0.78</span></div>
+          <div class="bar"><span class="label">Connectivity</span><div class="track"><div class="fill" style="width:64%"></div></div><span class="val">64%</span></div>
+          <div class="bar"><span class="label">Renewable Energy</span><div class="track"><div class="fill" style="width:42%"></div></div><span class="val">42%</span></div>
+          <div class="bar"><span class="label">Biodiversity Index</span><div class="track"><div class="fill" style="width:71%"></div></div><span class="val">0.71</span></div>
+        </div>
+
+        <div class="section-label">Did you know?</div>
+        <div class="grid cols-2">
+          <div class="card">
+            <h4>🎭 Cultural footprint</h4>
+            <p id="fact-1">A local festival here draws millions each year, blending ancient ritual with modern spectacle.</p>
+          </div>
+          <div class="card">
+            <h4>🍽️ Signature flavor</h4>
+            <p id="fact-2">A staple dish — humble in ingredients, elegant in method — defines daily tables nationwide.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-foot">
+        <div style="color: var(--ink-mute); font-size: 12px;">Placeholder content · connect a data source to populate live fields.</div>
+        <div style="display:flex; gap:10px;">
+          <button class="btn" id="modalDismiss">Close</button>
+          <button class="btn primary">Open full report →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.8.5/dist/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<script>
+/* ---------- Theme (dark / light) ---------- */
+const THEME_KEY = 'atlas-theme';
+const themeToggle = document.getElementById('themeToggle');
+const themeIcon = document.getElementById('themeIcon');
+const themeLabel = document.getElementById('themeLabel');
+
+function getPreferredTheme() {
+  const saved = localStorage.getItem(THEME_KEY);
+  if (saved === 'dark' || saved === 'light') return saved;
+  return window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+}
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  if (themeIcon) themeIcon.textContent = theme === 'light' ? '☀️' : '🌙';
+  if (themeLabel) themeLabel.textContent = theme === 'light' ? 'Light' : 'Dark';
+}
+
+applyTheme(getPreferredTheme());
+themeToggle?.addEventListener('click', () => {
+  const current = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+  const next = current === 'light' ? 'dark' : 'light';
+  localStorage.setItem(THEME_KEY, next);
+  applyTheme(next);
+});
+
+/* ---------- Country metadata: ISO numeric → { name, iso2, tz, capital, currency, region } ---------- */
+const COUNTRY_DATA = {
+  '004': { name: 'Afghanistan', iso2: 'AF', tz: 'Asia/Kabul', capital: 'Kabul', currency: 'AFN', region: 'South Asia' },
+  '008': { name: 'Albania', iso2: 'AL', tz: 'Europe/Tirane', capital: 'Tirana', currency: 'ALL', region: 'Europe' },
+  '012': { name: 'Algeria', iso2: 'DZ', tz: 'Africa/Algiers', capital: 'Algiers', currency: 'DZD', region: 'North Africa' },
+  '024': { name: 'Angola', iso2: 'AO', tz: 'Africa/Luanda', capital: 'Luanda', currency: 'AOA', region: 'Africa' },
+  '032': { name: 'Argentina', iso2: 'AR', tz: 'America/Argentina/Buenos_Aires', capital: 'Buenos Aires', currency: 'ARS', region: 'South America' },
+  '036': { name: 'Australia', iso2: 'AU', tz: 'Australia/Sydney', capital: 'Canberra', currency: 'AUD', region: 'Oceania' },
+  '040': { name: 'Austria', iso2: 'AT', tz: 'Europe/Vienna', capital: 'Vienna', currency: 'EUR', region: 'Europe' },
+  '044': { name: 'Bahamas', iso2: 'BS', tz: 'America/Nassau', capital: 'Nassau', currency: 'BSD', region: 'Caribbean' },
+  '050': { name: 'Bangladesh', iso2: 'BD', tz: 'Asia/Dhaka', capital: 'Dhaka', currency: 'BDT', region: 'South Asia' },
+  '051': { name: 'Armenia', iso2: 'AM', tz: 'Asia/Yerevan', capital: 'Yerevan', currency: 'AMD', region: 'Caucasus' },
+  '056': { name: 'Belgium', iso2: 'BE', tz: 'Europe/Brussels', capital: 'Brussels', currency: 'EUR', region: 'Europe' },
+  '064': { name: 'Bhutan', iso2: 'BT', tz: 'Asia/Thimphu', capital: 'Thimphu', currency: 'BTN', region: 'South Asia' },
+  '068': { name: 'Bolivia', iso2: 'BO', tz: 'America/La_Paz', capital: 'Sucre', currency: 'BOB', region: 'South America' },
+  '070': { name: 'Bosnia and Herz.', iso2: 'BA', tz: 'Europe/Sarajevo', capital: 'Sarajevo', currency: 'BAM', region: 'Europe' },
+  '072': { name: 'Botswana', iso2: 'BW', tz: 'Africa/Gaborone', capital: 'Gaborone', currency: 'BWP', region: 'Africa' },
+  '076': { name: 'Brazil', iso2: 'BR', tz: 'America/Sao_Paulo', capital: 'Brasília', currency: 'BRL', region: 'South America' },
+  '084': { name: 'Belize', iso2: 'BZ', tz: 'America/Belize', capital: 'Belmopan', currency: 'BZD', region: 'Central America' },
+  '090': { name: 'Solomon Is.', iso2: 'SB', tz: 'Pacific/Guadalcanal', capital: 'Honiara', currency: 'SBD', region: 'Oceania' },
+  '096': { name: 'Brunei', iso2: 'BN', tz: 'Asia/Brunei', capital: 'Bandar Seri Begawan', currency: 'BND', region: 'Southeast Asia' },
+  '100': { name: 'Bulgaria', iso2: 'BG', tz: 'Europe/Sofia', capital: 'Sofia', currency: 'BGN', region: 'Europe' },
+  '104': { name: 'Myanmar', iso2: 'MM', tz: 'Asia/Yangon', capital: 'Naypyidaw', currency: 'MMK', region: 'Southeast Asia' },
+  '108': { name: 'Burundi', iso2: 'BI', tz: 'Africa/Bujumbura', capital: 'Gitega', currency: 'BIF', region: 'Africa' },
+  '112': { name: 'Belarus', iso2: 'BY', tz: 'Europe/Minsk', capital: 'Minsk', currency: 'BYN', region: 'Europe' },
+  '116': { name: 'Cambodia', iso2: 'KH', tz: 'Asia/Phnom_Penh', capital: 'Phnom Penh', currency: 'KHR', region: 'Southeast Asia' },
+  '120': { name: 'Cameroon', iso2: 'CM', tz: 'Africa/Douala', capital: 'Yaoundé', currency: 'XAF', region: 'Africa' },
+  '124': { name: 'Canada', iso2: 'CA', tz: 'America/Toronto', capital: 'Ottawa', currency: 'CAD', region: 'North America' },
+  '140': { name: 'Central African Rep.', iso2: 'CF', tz: 'Africa/Bangui', capital: 'Bangui', currency: 'XAF', region: 'Africa' },
+  '144': { name: 'Sri Lanka', iso2: 'LK', tz: 'Asia/Colombo', capital: 'Colombo', currency: 'LKR', region: 'South Asia' },
+  '148': { name: 'Chad', iso2: 'TD', tz: 'Africa/Ndjamena', capital: "N'Djamena", currency: 'XAF', region: 'Africa' },
+  '152': { name: 'Chile', iso2: 'CL', tz: 'America/Santiago', capital: 'Santiago', currency: 'CLP', region: 'South America' },
+  '156': { name: 'China', iso2: 'CN', tz: 'Asia/Shanghai', capital: 'Beijing', currency: 'CNY', region: 'East Asia' },
+  '158': { name: 'Taiwan', iso2: 'TW', tz: 'Asia/Taipei', capital: 'Taipei', currency: 'TWD', region: 'East Asia' },
+  '170': { name: 'Colombia', iso2: 'CO', tz: 'America/Bogota', capital: 'Bogotá', currency: 'COP', region: 'South America' },
+  '178': { name: 'Congo', iso2: 'CG', tz: 'Africa/Brazzaville', capital: 'Brazzaville', currency: 'XAF', region: 'Africa' },
+  '180': { name: 'Dem. Rep. Congo', iso2: 'CD', tz: 'Africa/Kinshasa', capital: 'Kinshasa', currency: 'CDF', region: 'Africa' },
+  '188': { name: 'Costa Rica', iso2: 'CR', tz: 'America/Costa_Rica', capital: 'San José', currency: 'CRC', region: 'Central America' },
+  '191': { name: 'Croatia', iso2: 'HR', tz: 'Europe/Zagreb', capital: 'Zagreb', currency: 'EUR', region: 'Europe' },
+  '192': { name: 'Cuba', iso2: 'CU', tz: 'America/Havana', capital: 'Havana', currency: 'CUP', region: 'Caribbean' },
+  '196': { name: 'Cyprus', iso2: 'CY', tz: 'Asia/Nicosia', capital: 'Nicosia', currency: 'EUR', region: 'Europe' },
+  '203': { name: 'Czechia', iso2: 'CZ', tz: 'Europe/Prague', capital: 'Prague', currency: 'CZK', region: 'Europe' },
+  '204': { name: 'Benin', iso2: 'BJ', tz: 'Africa/Porto-Novo', capital: 'Porto-Novo', currency: 'XOF', region: 'Africa' },
+  '208': { name: 'Denmark', iso2: 'DK', tz: 'Europe/Copenhagen', capital: 'Copenhagen', currency: 'DKK', region: 'Europe' },
+  '214': { name: 'Dominican Rep.', iso2: 'DO', tz: 'America/Santo_Domingo', capital: 'Santo Domingo', currency: 'DOP', region: 'Caribbean' },
+  '218': { name: 'Ecuador', iso2: 'EC', tz: 'America/Guayaquil', capital: 'Quito', currency: 'USD', region: 'South America' },
+  '222': { name: 'El Salvador', iso2: 'SV', tz: 'America/El_Salvador', capital: 'San Salvador', currency: 'USD', region: 'Central America' },
+  '226': { name: 'Eq. Guinea', iso2: 'GQ', tz: 'Africa/Malabo', capital: 'Malabo', currency: 'XAF', region: 'Africa' },
+  '231': { name: 'Ethiopia', iso2: 'ET', tz: 'Africa/Addis_Ababa', capital: 'Addis Ababa', currency: 'ETB', region: 'Africa' },
+  '232': { name: 'Eritrea', iso2: 'ER', tz: 'Africa/Asmara', capital: 'Asmara', currency: 'ERN', region: 'Africa' },
+  '233': { name: 'Estonia', iso2: 'EE', tz: 'Europe/Tallinn', capital: 'Tallinn', currency: 'EUR', region: 'Europe' },
+  '242': { name: 'Fiji', iso2: 'FJ', tz: 'Pacific/Fiji', capital: 'Suva', currency: 'FJD', region: 'Oceania' },
+  '246': { name: 'Finland', iso2: 'FI', tz: 'Europe/Helsinki', capital: 'Helsinki', currency: 'EUR', region: 'Europe' },
+  '250': { name: 'France', iso2: 'FR', tz: 'Europe/Paris', capital: 'Paris', currency: 'EUR', region: 'Europe' },
+  '260': { name: 'Fr. S. Antarctic Lands', iso2: 'TF', tz: 'Indian/Kerguelen', capital: '—', currency: 'EUR', region: 'Antarctic' },
+  '262': { name: 'Djibouti', iso2: 'DJ', tz: 'Africa/Djibouti', capital: 'Djibouti', currency: 'DJF', region: 'Africa' },
+  '266': { name: 'Gabon', iso2: 'GA', tz: 'Africa/Libreville', capital: 'Libreville', currency: 'XAF', region: 'Africa' },
+  '268': { name: 'Georgia', iso2: 'GE', tz: 'Asia/Tbilisi', capital: 'Tbilisi', currency: 'GEL', region: 'Caucasus' },
+  '270': { name: 'Gambia', iso2: 'GM', tz: 'Africa/Banjul', capital: 'Banjul', currency: 'GMD', region: 'Africa' },
+  '275': { name: 'Palestine', iso2: 'PS', tz: 'Asia/Gaza', capital: 'Ramallah', currency: 'ILS', region: 'Middle East' },
+  '276': { name: 'Germany', iso2: 'DE', tz: 'Europe/Berlin', capital: 'Berlin', currency: 'EUR', region: 'Europe' },
+  '288': { name: 'Ghana', iso2: 'GH', tz: 'Africa/Accra', capital: 'Accra', currency: 'GHS', region: 'Africa' },
+  '300': { name: 'Greece', iso2: 'GR', tz: 'Europe/Athens', capital: 'Athens', currency: 'EUR', region: 'Europe' },
+  '304': { name: 'Greenland', iso2: 'GL', tz: 'America/Godthab', capital: 'Nuuk', currency: 'DKK', region: 'Arctic' },
+  '320': { name: 'Guatemala', iso2: 'GT', tz: 'America/Guatemala', capital: 'Guatemala City', currency: 'GTQ', region: 'Central America' },
+  '324': { name: 'Guinea', iso2: 'GN', tz: 'Africa/Conakry', capital: 'Conakry', currency: 'GNF', region: 'Africa' },
+  '328': { name: 'Guyana', iso2: 'GY', tz: 'America/Guyana', capital: 'Georgetown', currency: 'GYD', region: 'South America' },
+  '332': { name: 'Haiti', iso2: 'HT', tz: 'America/Port-au-Prince', capital: 'Port-au-Prince', currency: 'HTG', region: 'Caribbean' },
+  '340': { name: 'Honduras', iso2: 'HN', tz: 'America/Tegucigalpa', capital: 'Tegucigalpa', currency: 'HNL', region: 'Central America' },
+  '348': { name: 'Hungary', iso2: 'HU', tz: 'Europe/Budapest', capital: 'Budapest', currency: 'HUF', region: 'Europe' },
+  '352': { name: 'Iceland', iso2: 'IS', tz: 'Atlantic/Reykjavik', capital: 'Reykjavík', currency: 'ISK', region: 'Europe' },
+  '356': { name: 'India', iso2: 'IN', tz: 'Asia/Kolkata', capital: 'New Delhi', currency: 'INR', region: 'South Asia' },
+  '360': { name: 'Indonesia', iso2: 'ID', tz: 'Asia/Jakarta', capital: 'Jakarta', currency: 'IDR', region: 'Southeast Asia' },
+  '364': { name: 'Iran', iso2: 'IR', tz: 'Asia/Tehran', capital: 'Tehran', currency: 'IRR', region: 'Middle East' },
+  '368': { name: 'Iraq', iso2: 'IQ', tz: 'Asia/Baghdad', capital: 'Baghdad', currency: 'IQD', region: 'Middle East' },
+  '372': { name: 'Ireland', iso2: 'IE', tz: 'Europe/Dublin', capital: 'Dublin', currency: 'EUR', region: 'Europe' },
+  '376': { name: 'Israel', iso2: 'IL', tz: 'Asia/Jerusalem', capital: 'Jerusalem', currency: 'ILS', region: 'Middle East' },
+  '380': { name: 'Italy', iso2: 'IT', tz: 'Europe/Rome', capital: 'Rome', currency: 'EUR', region: 'Europe' },
+  '384': { name: "Côte d'Ivoire", iso2: 'CI', tz: 'Africa/Abidjan', capital: 'Yamoussoukro', currency: 'XOF', region: 'Africa' },
+  '388': { name: 'Jamaica', iso2: 'JM', tz: 'America/Jamaica', capital: 'Kingston', currency: 'JMD', region: 'Caribbean' },
+  '392': { name: 'Japan', iso2: 'JP', tz: 'Asia/Tokyo', capital: 'Tokyo', currency: 'JPY', region: 'East Asia' },
+  '398': { name: 'Kazakhstan', iso2: 'KZ', tz: 'Asia/Almaty', capital: 'Astana', currency: 'KZT', region: 'Central Asia' },
+  '400': { name: 'Jordan', iso2: 'JO', tz: 'Asia/Amman', capital: 'Amman', currency: 'JOD', region: 'Middle East' },
+  '404': { name: 'Kenya', iso2: 'KE', tz: 'Africa/Nairobi', capital: 'Nairobi', currency: 'KES', region: 'Africa' },
+  '408': { name: 'North Korea', iso2: 'KP', tz: 'Asia/Pyongyang', capital: 'Pyongyang', currency: 'KPW', region: 'East Asia' },
+  '410': { name: 'South Korea', iso2: 'KR', tz: 'Asia/Seoul', capital: 'Seoul', currency: 'KRW', region: 'East Asia' },
+  '414': { name: 'Kuwait', iso2: 'KW', tz: 'Asia/Kuwait', capital: 'Kuwait City', currency: 'KWD', region: 'Middle East' },
+  '417': { name: 'Kyrgyzstan', iso2: 'KG', tz: 'Asia/Bishkek', capital: 'Bishkek', currency: 'KGS', region: 'Central Asia' },
+  '418': { name: 'Laos', iso2: 'LA', tz: 'Asia/Vientiane', capital: 'Vientiane', currency: 'LAK', region: 'Southeast Asia' },
+  '422': { name: 'Lebanon', iso2: 'LB', tz: 'Asia/Beirut', capital: 'Beirut', currency: 'LBP', region: 'Middle East' },
+  '426': { name: 'Lesotho', iso2: 'LS', tz: 'Africa/Maseru', capital: 'Maseru', currency: 'LSL', region: 'Africa' },
+  '428': { name: 'Latvia', iso2: 'LV', tz: 'Europe/Riga', capital: 'Riga', currency: 'EUR', region: 'Europe' },
+  '430': { name: 'Liberia', iso2: 'LR', tz: 'Africa/Monrovia', capital: 'Monrovia', currency: 'LRD', region: 'Africa' },
+  '434': { name: 'Libya', iso2: 'LY', tz: 'Africa/Tripoli', capital: 'Tripoli', currency: 'LYD', region: 'North Africa' },
+  '440': { name: 'Lithuania', iso2: 'LT', tz: 'Europe/Vilnius', capital: 'Vilnius', currency: 'EUR', region: 'Europe' },
+  '442': { name: 'Luxembourg', iso2: 'LU', tz: 'Europe/Luxembourg', capital: 'Luxembourg', currency: 'EUR', region: 'Europe' },
+  '450': { name: 'Madagascar', iso2: 'MG', tz: 'Indian/Antananarivo', capital: 'Antananarivo', currency: 'MGA', region: 'Africa' },
+  '454': { name: 'Malawi', iso2: 'MW', tz: 'Africa/Blantyre', capital: 'Lilongwe', currency: 'MWK', region: 'Africa' },
+  '458': { name: 'Malaysia', iso2: 'MY', tz: 'Asia/Kuala_Lumpur', capital: 'Kuala Lumpur', currency: 'MYR', region: 'Southeast Asia' },
+  '466': { name: 'Mali', iso2: 'ML', tz: 'Africa/Bamako', capital: 'Bamako', currency: 'XOF', region: 'Africa' },
+  '478': { name: 'Mauritania', iso2: 'MR', tz: 'Africa/Nouakchott', capital: 'Nouakchott', currency: 'MRU', region: 'Africa' },
+  '484': { name: 'Mexico', iso2: 'MX', tz: 'America/Mexico_City', capital: 'Mexico City', currency: 'MXN', region: 'North America' },
+  '496': { name: 'Mongolia', iso2: 'MN', tz: 'Asia/Ulaanbaatar', capital: 'Ulaanbaatar', currency: 'MNT', region: 'East Asia' },
+  '498': { name: 'Moldova', iso2: 'MD', tz: 'Europe/Chisinau', capital: 'Chișinău', currency: 'MDL', region: 'Europe' },
+  '499': { name: 'Montenegro', iso2: 'ME', tz: 'Europe/Podgorica', capital: 'Podgorica', currency: 'EUR', region: 'Europe' },
+  '504': { name: 'Morocco', iso2: 'MA', tz: 'Africa/Casablanca', capital: 'Rabat', currency: 'MAD', region: 'North Africa' },
+  '508': { name: 'Mozambique', iso2: 'MZ', tz: 'Africa/Maputo', capital: 'Maputo', currency: 'MZN', region: 'Africa' },
+  '512': { name: 'Oman', iso2: 'OM', tz: 'Asia/Muscat', capital: 'Muscat', currency: 'OMR', region: 'Middle East' },
+  '516': { name: 'Namibia', iso2: 'NA', tz: 'Africa/Windhoek', capital: 'Windhoek', currency: 'NAD', region: 'Africa' },
+  '524': { name: 'Nepal', iso2: 'NP', tz: 'Asia/Kathmandu', capital: 'Kathmandu', currency: 'NPR', region: 'South Asia' },
+  '528': { name: 'Netherlands', iso2: 'NL', tz: 'Europe/Amsterdam', capital: 'Amsterdam', currency: 'EUR', region: 'Europe' },
+  '540': { name: 'New Caledonia', iso2: 'NC', tz: 'Pacific/Noumea', capital: 'Nouméa', currency: 'XPF', region: 'Oceania' },
+  '548': { name: 'Vanuatu', iso2: 'VU', tz: 'Pacific/Efate', capital: 'Port Vila', currency: 'VUV', region: 'Oceania' },
+  '554': { name: 'New Zealand', iso2: 'NZ', tz: 'Pacific/Auckland', capital: 'Wellington', currency: 'NZD', region: 'Oceania' },
+  '558': { name: 'Nicaragua', iso2: 'NI', tz: 'America/Managua', capital: 'Managua', currency: 'NIO', region: 'Central America' },
+  '562': { name: 'Niger', iso2: 'NE', tz: 'Africa/Niamey', capital: 'Niamey', currency: 'XOF', region: 'Africa' },
+  '566': { name: 'Nigeria', iso2: 'NG', tz: 'Africa/Lagos', capital: 'Abuja', currency: 'NGN', region: 'Africa' },
+  '578': { name: 'Norway', iso2: 'NO', tz: 'Europe/Oslo', capital: 'Oslo', currency: 'NOK', region: 'Europe' },
+  '586': { name: 'Pakistan', iso2: 'PK', tz: 'Asia/Karachi', capital: 'Islamabad', currency: 'PKR', region: 'South Asia' },
+  '591': { name: 'Panama', iso2: 'PA', tz: 'America/Panama', capital: 'Panama City', currency: 'PAB', region: 'Central America' },
+  '598': { name: 'Papua New Guinea', iso2: 'PG', tz: 'Pacific/Port_Moresby', capital: 'Port Moresby', currency: 'PGK', region: 'Oceania' },
+  '600': { name: 'Paraguay', iso2: 'PY', tz: 'America/Asuncion', capital: 'Asunción', currency: 'PYG', region: 'South America' },
+  '604': { name: 'Peru', iso2: 'PE', tz: 'America/Lima', capital: 'Lima', currency: 'PEN', region: 'South America' },
+  '608': { name: 'Philippines', iso2: 'PH', tz: 'Asia/Manila', capital: 'Manila', currency: 'PHP', region: 'Southeast Asia' },
+  '616': { name: 'Poland', iso2: 'PL', tz: 'Europe/Warsaw', capital: 'Warsaw', currency: 'PLN', region: 'Europe' },
+  '620': { name: 'Portugal', iso2: 'PT', tz: 'Europe/Lisbon', capital: 'Lisbon', currency: 'EUR', region: 'Europe' },
+  '624': { name: 'Guinea-Bissau', iso2: 'GW', tz: 'Africa/Bissau', capital: 'Bissau', currency: 'XOF', region: 'Africa' },
+  '626': { name: 'Timor-Leste', iso2: 'TL', tz: 'Asia/Dili', capital: 'Dili', currency: 'USD', region: 'Southeast Asia' },
+  '630': { name: 'Puerto Rico', iso2: 'PR', tz: 'America/Puerto_Rico', capital: 'San Juan', currency: 'USD', region: 'Caribbean' },
+  '634': { name: 'Qatar', iso2: 'QA', tz: 'Asia/Qatar', capital: 'Doha', currency: 'QAR', region: 'Middle East' },
+  '642': { name: 'Romania', iso2: 'RO', tz: 'Europe/Bucharest', capital: 'Bucharest', currency: 'RON', region: 'Europe' },
+  '643': { name: 'Russia', iso2: 'RU', tz: 'Europe/Moscow', capital: 'Moscow', currency: 'RUB', region: 'Europe/Asia' },
+  '646': { name: 'Rwanda', iso2: 'RW', tz: 'Africa/Kigali', capital: 'Kigali', currency: 'RWF', region: 'Africa' },
+  '682': { name: 'Saudi Arabia', iso2: 'SA', tz: 'Asia/Riyadh', capital: 'Riyadh', currency: 'SAR', region: 'Middle East' },
+  '686': { name: 'Senegal', iso2: 'SN', tz: 'Africa/Dakar', capital: 'Dakar', currency: 'XOF', region: 'Africa' },
+  '688': { name: 'Serbia', iso2: 'RS', tz: 'Europe/Belgrade', capital: 'Belgrade', currency: 'RSD', region: 'Europe' },
+  '694': { name: 'Sierra Leone', iso2: 'SL', tz: 'Africa/Freetown', capital: 'Freetown', currency: 'SLL', region: 'Africa' },
+  '702': { name: 'Singapore', iso2: 'SG', tz: 'Asia/Singapore', capital: 'Singapore', currency: 'SGD', region: 'Southeast Asia' },
+  '703': { name: 'Slovakia', iso2: 'SK', tz: 'Europe/Bratislava', capital: 'Bratislava', currency: 'EUR', region: 'Europe' },
+  '704': { name: 'Vietnam', iso2: 'VN', tz: 'Asia/Ho_Chi_Minh', capital: 'Hanoi', currency: 'VND', region: 'Southeast Asia' },
+  '705': { name: 'Slovenia', iso2: 'SI', tz: 'Europe/Ljubljana', capital: 'Ljubljana', currency: 'EUR', region: 'Europe' },
+  '706': { name: 'Somalia', iso2: 'SO', tz: 'Africa/Mogadishu', capital: 'Mogadishu', currency: 'SOS', region: 'Africa' },
+  '710': { name: 'South Africa', iso2: 'ZA', tz: 'Africa/Johannesburg', capital: 'Pretoria', currency: 'ZAR', region: 'Africa' },
+  '716': { name: 'Zimbabwe', iso2: 'ZW', tz: 'Africa/Harare', capital: 'Harare', currency: 'ZWL', region: 'Africa' },
+  '724': { name: 'Spain', iso2: 'ES', tz: 'Europe/Madrid', capital: 'Madrid', currency: 'EUR', region: 'Europe' },
+  '728': { name: 'S. Sudan', iso2: 'SS', tz: 'Africa/Juba', capital: 'Juba', currency: 'SSP', region: 'Africa' },
+  '729': { name: 'Sudan', iso2: 'SD', tz: 'Africa/Khartoum', capital: 'Khartoum', currency: 'SDG', region: 'Africa' },
+  '732': { name: 'W. Sahara', iso2: 'EH', tz: 'Africa/El_Aaiun', capital: 'El Aaiún', currency: 'MAD', region: 'North Africa' },
+  '740': { name: 'Suriname', iso2: 'SR', tz: 'America/Paramaribo', capital: 'Paramaribo', currency: 'SRD', region: 'South America' },
+  '748': { name: 'Eswatini', iso2: 'SZ', tz: 'Africa/Mbabane', capital: 'Mbabane', currency: 'SZL', region: 'Africa' },
+  '752': { name: 'Sweden', iso2: 'SE', tz: 'Europe/Stockholm', capital: 'Stockholm', currency: 'SEK', region: 'Europe' },
+  '756': { name: 'Switzerland', iso2: 'CH', tz: 'Europe/Zurich', capital: 'Bern', currency: 'CHF', region: 'Europe' },
+  '760': { name: 'Syria', iso2: 'SY', tz: 'Asia/Damascus', capital: 'Damascus', currency: 'SYP', region: 'Middle East' },
+  '762': { name: 'Tajikistan', iso2: 'TJ', tz: 'Asia/Dushanbe', capital: 'Dushanbe', currency: 'TJS', region: 'Central Asia' },
+  '764': { name: 'Thailand', iso2: 'TH', tz: 'Asia/Bangkok', capital: 'Bangkok', currency: 'THB', region: 'Southeast Asia' },
+  '768': { name: 'Togo', iso2: 'TG', tz: 'Africa/Lome', capital: 'Lomé', currency: 'XOF', region: 'Africa' },
+  '776': { name: 'Tonga', iso2: 'TO', tz: 'Pacific/Tongatapu', capital: 'Nukuʻalofa', currency: 'TOP', region: 'Oceania' },
+  '780': { name: 'Trinidad and Tobago', iso2: 'TT', tz: 'America/Port_of_Spain', capital: 'Port of Spain', currency: 'TTD', region: 'Caribbean' },
+  '784': { name: 'United Arab Emirates', iso2: 'AE', tz: 'Asia/Dubai', capital: 'Abu Dhabi', currency: 'AED', region: 'Middle East' },
+  '788': { name: 'Tunisia', iso2: 'TN', tz: 'Africa/Tunis', capital: 'Tunis', currency: 'TND', region: 'North Africa' },
+  '792': { name: 'Turkey', iso2: 'TR', tz: 'Europe/Istanbul', capital: 'Ankara', currency: 'TRY', region: 'Europe/Asia' },
+  '795': { name: 'Turkmenistan', iso2: 'TM', tz: 'Asia/Ashgabat', capital: 'Ashgabat', currency: 'TMT', region: 'Central Asia' },
+  '798': { name: 'Tuvalu', iso2: 'TV', tz: 'Pacific/Funafuti', capital: 'Funafuti', currency: 'AUD', region: 'Oceania' },
+  '800': { name: 'Uganda', iso2: 'UG', tz: 'Africa/Kampala', capital: 'Kampala', currency: 'UGX', region: 'Africa' },
+  '804': { name: 'Ukraine', iso2: 'UA', tz: 'Europe/Kiev', capital: 'Kyiv', currency: 'UAH', region: 'Europe' },
+  '807': { name: 'N. Macedonia', iso2: 'MK', tz: 'Europe/Skopje', capital: 'Skopje', currency: 'MKD', region: 'Europe' },
+  '818': { name: 'Egypt', iso2: 'EG', tz: 'Africa/Cairo', capital: 'Cairo', currency: 'EGP', region: 'North Africa' },
+  '826': { name: 'United Kingdom', iso2: 'GB', tz: 'Europe/London', capital: 'London', currency: 'GBP', region: 'Europe' },
+  '834': { name: 'Tanzania', iso2: 'TZ', tz: 'Africa/Dar_es_Salaam', capital: 'Dodoma', currency: 'TZS', region: 'Africa' },
+  '840': { name: 'United States of America', iso2: 'US', tz: 'America/New_York', capital: 'Washington, D.C.', currency: 'USD', region: 'North America' },
+  '854': { name: 'Burkina Faso', iso2: 'BF', tz: 'Africa/Ouagadougou', capital: 'Ouagadougou', currency: 'XOF', region: 'Africa' },
+  '858': { name: 'Uruguay', iso2: 'UY', tz: 'America/Montevideo', capital: 'Montevideo', currency: 'UYU', region: 'South America' },
+  '860': { name: 'Uzbekistan', iso2: 'UZ', tz: 'Asia/Tashkent', capital: 'Tashkent', currency: 'UZS', region: 'Central Asia' },
+  '862': { name: 'Venezuela', iso2: 'VE', tz: 'America/Caracas', capital: 'Caracas', currency: 'VES', region: 'South America' },
+  '882': { name: 'Samoa', iso2: 'WS', tz: 'Pacific/Apia', capital: 'Apia', currency: 'WST', region: 'Oceania' },
+  '887': { name: 'Yemen', iso2: 'YE', tz: 'Asia/Aden', capital: "Sana'a", currency: 'YER', region: 'Middle East' },
+  '894': { name: 'Zambia', iso2: 'ZM', tz: 'Africa/Lusaka', capital: 'Lusaka', currency: 'ZMW', region: 'Africa' }
+};
+
+/* ---------- Emoji flag from ISO-2 ---------- */
+function flagEmoji(iso2) {
+  if (!iso2 || iso2.length !== 2) return '🌍';
+  const base = 0x1F1E6;
+  const A = 'A'.charCodeAt(0);
+  return String.fromCodePoint(base + iso2.toUpperCase().charCodeAt(0) - A)
+       + String.fromCodePoint(base + iso2.toUpperCase().charCodeAt(1) - A);
+}
+
+/* ---------- Local time formatting ---------- */
+function formatLocalTime(tz) {
+  try {
+    const f = new Intl.DateTimeFormat('en-US', {
+      hour: '2-digit', minute: '2-digit', second: '2-digit',
+      hour12: false, timeZone: tz
+    });
+    return f.format(new Date());
+  } catch { return '--:--:--'; }
+}
+function tzLabel(tz) {
+  try {
+    const parts = new Intl.DateTimeFormat('en-US', { timeZone: tz, timeZoneName: 'short' }).formatToParts(new Date());
+    const n = parts.find(p => p.type === 'timeZoneName');
+    return n ? n.value : tz.split('/').pop();
+  } catch { return 'UTC'; }
+}
+
+/* ---------- UTC clock ---------- */
+function tickClock() {
+  const now = new Date();
+  const f = new Intl.DateTimeFormat('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'UTC' }).format(now);
+  document.getElementById('utcClock').textContent = 'UTC ' + f;
+}
+setInterval(tickClock, 1000); tickClock();
+
+/* ---------- Build map ---------- */
+const svg = d3.select('#worldSvg');
+const mapWrap = document.getElementById('mapWrap');
+const tooltip = document.getElementById('tooltip');
+const arrowOverlay = document.getElementById('arrowOverlay');
+const arrowLine = document.getElementById('arrowLine');
+const pulseRing = document.getElementById('pulseRing');
+
+const width = 1000, height = 560;
+// Fit projection to the SVG viewBox with intentional padding.
+// Increase left/right/top padding while keeping bottom padding tighter.
+const PAD_X = 16;
+const PAD_TOP = 8;
+const PAD_BOTTOM = 8;
+
+const projection = d3.geoNaturalEarth1();
+const path = d3.geoPath(projection);
+
+const defs = svg.select('defs');
+// Sphere & graticule
+const spherePath = svg.append('path').datum({ type: 'Sphere' }).attr('class', 'sphere');
+const graticulePath = svg.append('path').datum(d3.geoGraticule10()).attr('class', 'graticule');
+
+const countriesG = svg.append('g').attr('class', 'countries');
+
+let hoveredEl = null;
+let ttTimer = null;
+
+d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json')
+  .then(topo => {
+    document.getElementById('loader').style.display = 'none';
+    const geo = topojson.feature(topo, topo.objects.countries);
+
+    // Ensure the whole world stays inside the viewBox, with extra space
+    // on left/right/top and a tighter bottom margin (as requested).
+    projection.fitExtent(
+      [[PAD_X, PAD_TOP], [width - PAD_X, height - PAD_BOTTOM]],
+      { type: 'Sphere' }
+    );
+
+    spherePath.attr('d', path);
+    graticulePath.attr('d', path);
+
+    countriesG.selectAll('path.country')
+      .data(geo.features)
+      .join('path')
+      .attr('class', 'country')
+      .attr('d', path)
+      .attr('data-id', d => String(d.id).padStart(3, '0'))
+      .on('mouseenter', function(event, d) {
+        hoveredEl = this;
+        showTooltipFor(this, event);
+      })
+      .on('mousemove', function(event) {
+        if (hoveredEl === this) positionTooltip(this, event);
+      })
+      .on('mouseleave', function() {
+        if (hoveredEl === this) {
+          hoveredEl = null;
+          hideTooltip();
+        }
+      })
+      .on('click', function(event, d) {
+        event.stopPropagation();
+        const id = String(d.id).padStart(3, '0');
+        const meta = COUNTRY_DATA[id];
+        // select effect
+        countriesG.selectAll('.country.selected').classed('selected', false);
+        d3.select(this).classed('selected', true);
+        openModal(meta || fallbackMeta(d));
+      });
+  })
+  .catch(err => {
+    document.getElementById('loader').innerHTML = '<span style="color:#f472b6">Failed to load map data. Check your connection.</span>';
+    console.error(err);
+  });
+
+function fallbackMeta(d) {
+  const props = d.properties || {};
+  return { name: props.name || 'Unknown Territory', iso2: '', tz: 'UTC', capital: '—', currency: '—', region: '—' };
+}
+
+/* ---------- Tooltip logic ---------- */
+function showTooltipFor(el, event) {
+  const id = el.getAttribute('data-id');
+  const meta = COUNTRY_DATA[id];
+  const name = meta ? meta.name : (el.__data__?.properties?.name || 'Unknown');
+  const tz = meta ? meta.tz : 'UTC';
+
+  document.getElementById('tt-flag').textContent = meta ? flagEmoji(meta.iso2) : '🌍';
+  document.getElementById('tt-name').textContent = name;
+  document.getElementById('tt-tz').textContent = tzLabel(tz);
+  document.getElementById('tt-time').textContent = formatLocalTime(tz);
+
+  tooltip.classList.add('visible');
+  arrowOverlay.classList.add('visible');
+
+  // live update time
+  clearInterval(ttTimer);
+  ttTimer = setInterval(() => {
+    if (!hoveredEl) return;
+    document.getElementById('tt-time').textContent = formatLocalTime(tz);
+  }, 1000);
+
+  positionTooltip(el, event);
+}
+
+function hideTooltip() {
+  tooltip.classList.remove('visible');
+  arrowOverlay.classList.remove('visible');
+  clearInterval(ttTimer); ttTimer = null;
+}
+
+function positionTooltip(el, event) {
+  // Get a stable target point for the country in screen coordinates.
+  // Using the DOM bbox center can land outside concave / multi-part shapes.
+  const d = el.__data__;
+  const svgNode = svg.node();
+  let targetX, targetY;
+  try {
+    // Prefer a point guaranteed to be inside the rendered country shape.
+    // `geoPath().centroid()` can fall outside for concave / multi-part geometries.
+    const [cx, cy] = interiorPointProjected(d) || path.centroid(d); // viewBox coords
+    const pt = svgNode.createSVGPoint();
+    pt.x = cx; pt.y = cy;
+    const screen = pt.matrixTransform(svgNode.getScreenCTM());
+    targetX = screen.x;
+    targetY = screen.y;
+  } catch {
+    const bbox = el.getBoundingClientRect();
+    targetX = bbox.left + bbox.width / 2;
+    targetY = bbox.top + bbox.height / 2;
+  }
+
+  const bbox = el.getBoundingClientRect();
+
+  // Tooltip position offset from target along a direction away from the mouse/center
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  // Prefer upper-right of target if space allows, else flip
+  const offsetDist = Math.max(110, Math.min(bbox.width, bbox.height) * 0.9 + 90);
+
+  // Choose angle: default up-right; flip near edges
+  let dx = 1, dy = -1;
+  if (targetX > vw - 260) dx = -1;
+  if (targetY < 180) dy = 1;
+  const mag = Math.hypot(dx, dy);
+  const tx = targetX + (dx / mag) * offsetDist;
+  const ty = targetY + (dy / mag) * offsetDist;
+
+  tooltip.style.left = tx + 'px';
+  tooltip.style.top = ty + 'px';
+
+  // Arrow from tooltip edge toward country center
+  const ttRect = tooltip.getBoundingClientRect();
+  // shrink end so it doesn't enter the country shape (stop a little outside)
+  const vdx = targetX - tx;
+  const vdy = targetY - ty;
+  const dist = Math.hypot(vdx, vdy) || 1;
+  const endX = targetX - (vdx / dist) * 10;
+  const endY = targetY - (vdy / dist) * 10;
+  // start point from tooltip card edge toward target
+  const ttCx = ttRect.left + ttRect.width / 2;
+  const ttCy = ttRect.top + ttRect.height / 2;
+  const udx = targetX - ttCx;
+  const udy = targetY - ttCy;
+  const udist = Math.hypot(udx, udy) || 1;
+  // stop at roughly the half-diagonal of tooltip toward target
+  const ttHalf = Math.min(ttRect.width, ttRect.height) / 2 + 6;
+  const startX = ttCx + (udx / udist) * ttHalf;
+  const startY = ttCy + (udy / udist) * ttHalf;
+
+  // Curved path using a control point for a natural arc
+  const midX = (startX + endX) / 2 + (-udy / udist) * 18;
+  const midY = (startY + endY) / 2 + (udx / udist) * 18;
+  arrowLine.setAttribute('d', `M ${startX} ${startY} Q ${midX} ${midY} ${endX} ${endY}`);
+
+  // Pulse ring at target
+  pulseRing.setAttribute('cx', targetX);
+  pulseRing.setAttribute('cy', targetY);
+
+  // Ensure overlay covers viewport
+  arrowOverlay.setAttribute('viewBox', `0 0 ${vw} ${vh}`);
+  arrowOverlay.setAttribute('width', vw);
+  arrowOverlay.setAttribute('height', vh);
+}
+
+function interiorPointProjected(feature) {
+  try {
+    const geom = feature && feature.geometry;
+    if (!geom) return null;
+
+    const polys = [];
+    if (geom.type === 'Polygon') polys.push(geom.coordinates);
+    else if (geom.type === 'MultiPolygon') polys.push(...geom.coordinates);
+    else return null;
+
+    let best = null;
+    for (const poly of polys) {
+      const candidate = polyInteriorPointProjected(poly);
+      if (!candidate) continue;
+      if (!best || candidate.score > best.score) best = candidate;
+    }
+    return best ? best.point : null;
+  } catch {
+    return null;
+  }
+}
+
+function polyInteriorPointProjected(polygonCoords) {
+  // `polygonCoords` is [outerRing, ...holes], each ring is [ [lon,lat], ... ].
+  const rings = polygonCoords
+    .map(ring => ring.map(ll => projection(ll)))
+    .filter(r => Array.isArray(r) && r.length >= 3 && r.every(p => p && isFinite(p[0]) && isFinite(p[1])));
+  if (rings.length === 0) return null;
+
+  const outer = rings[0];
+  const holes = rings.slice(1);
+
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  for (const [x, y] of outer) {
+    if (x < minX) minX = x;
+    if (y < minY) minY = y;
+    if (x > maxX) maxX = x;
+    if (y > maxY) maxY = y;
+  }
+  if (!isFinite(minX) || !isFinite(minY) || !isFinite(maxX) || !isFinite(maxY)) return null;
+
+  const widthB = maxX - minX;
+  const heightB = maxY - minY;
+  if (widthB <= 0 || heightB <= 0) return null;
+
+  // Coarse-to-fine search for a point inside with maximum clearance to edges.
+  let bestX = (minX + maxX) / 2;
+  let bestY = (minY + maxY) / 2;
+  let bestScore = signedDistanceToPolygon(bestX, bestY, outer, holes);
+
+  let step = Math.max(widthB, heightB) / 6;
+  const minStep = 1.0; // px
+
+  while (step >= minStep) {
+    let improved = false;
+    for (let dx = -1; dx <= 1; dx++) {
+      for (let dy = -1; dy <= 1; dy++) {
+        if (dx === 0 && dy === 0) continue;
+        const x = bestX + dx * step;
+        const y = bestY + dy * step;
+        if (x < minX || x > maxX || y < minY || y > maxY) continue;
+        const score = signedDistanceToPolygon(x, y, outer, holes);
+        if (score > bestScore) {
+          bestScore = score;
+          bestX = x;
+          bestY = y;
+          improved = true;
+        }
+      }
+    }
+    if (!improved) step *= 0.6;
+  }
+
+  // If we ended outside (can happen for very thin shapes), fall back.
+  if (bestScore <= 0) return null;
+  return { point: [bestX, bestY], score: bestScore };
+}
+
+function signedDistanceToPolygon(x, y, outer, holes) {
+  // Positive if inside outer and not inside holes; negative otherwise.
+  const insideOuter = d3.polygonContains(outer, [x, y]);
+  const insideHole = holes.some(h => d3.polygonContains(h, [x, y]));
+  const inside = insideOuter && !insideHole;
+  const dist = distanceToRingsEdges(x, y, outer, holes);
+  return inside ? dist : -dist;
+}
+
+function distanceToRingsEdges(x, y, outer, holes) {
+  let min = distanceToRingEdges(x, y, outer);
+  for (const h of holes) {
+    const d = distanceToRingEdges(x, y, h);
+    if (d < min) min = d;
+  }
+  return min;
+}
+
+function distanceToRingEdges(x, y, ring) {
+  let minSq = Infinity;
+  for (let i = 0; i < ring.length - 1; i++) {
+    const [x1, y1] = ring[i];
+    const [x2, y2] = ring[i + 1];
+    const d2 = pointSegDistSq(x, y, x1, y1, x2, y2);
+    if (d2 < minSq) minSq = d2;
+  }
+  // close segment
+  const [sx, sy] = ring[0];
+  const [ex, ey] = ring[ring.length - 1];
+  const d2c = pointSegDistSq(x, y, sx, sy, ex, ey);
+  if (d2c < minSq) minSq = d2c;
+  return Math.sqrt(minSq);
+}
+
+function pointSegDistSq(px, py, x1, y1, x2, y2) {
+  const vx = x2 - x1, vy = y2 - y1;
+  const wx = px - x1, wy = py - y1;
+  const c1 = vx * wx + vy * wy;
+  if (c1 <= 0) return (px - x1) ** 2 + (py - y1) ** 2;
+  const c2 = vx * vx + vy * vy;
+  if (c2 <= c1) return (px - x2) ** 2 + (py - y2) ** 2;
+  const t = c1 / c2;
+  const bx = x1 + t * vx, by = y1 + t * vy;
+  return (px - bx) ** 2 + (py - by) ** 2;
+}
+
+/* ---------- Modal ---------- */
+const modalBackdrop = document.getElementById('modalBackdrop');
+
+function openModal(meta) {
+  document.getElementById('m-flag').textContent = flagEmoji(meta.iso2);
+  document.getElementById('m-name').textContent = meta.name;
+  document.getElementById('m-region').textContent = meta.region;
+  document.getElementById('m-time').textContent = formatLocalTime(meta.tz);
+  document.getElementById('m-code').textContent = meta.iso2 || '—';
+  document.getElementById('s-cap').textContent = meta.capital || '—';
+  document.getElementById('s-cur').textContent = meta.currency || '—';
+  document.getElementById('s-pop').textContent = fakePop(meta.name);
+  modalBackdrop.classList.add('open');
+  hideTooltip();
+}
+function closeModal() {
+  modalBackdrop.classList.remove('open');
+  countriesG.selectAll('.country.selected').classed('selected', false);
+}
+document.getElementById('modalClose').addEventListener('click', closeModal);
+document.getElementById('modalDismiss').addEventListener('click', closeModal);
+modalBackdrop.addEventListener('click', (e) => { if (e.target === modalBackdrop) closeModal(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+function fakePop(name) {
+  // Deterministic pseudo-random so the same country always shows the same placeholder.
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+  const pop = 500000 + (h % 1400000000);
+  if (pop > 1_000_000_000) return (pop / 1_000_000_000).toFixed(2) + 'B';
+  if (pop > 1_000_000) return (pop / 1_000_000).toFixed(1) + 'M';
+  return (pop / 1000).toFixed(0) + 'K';
+}
+</script>
+</body>
+</html>
